@@ -17,39 +17,10 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="784*"/>
         </Grid.ColumnDefinitions>
-        <ListView Margin="0,30,0,30">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="200">ファイル</GridViewColumn>
-                    <GridViewColumn Width="200">フォルダ</GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center"/>
-        <Button HorizontalAlignment="Left" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom"
-                Command="{Binding FolderSelectCommand}">
-            <Image Source="pack://siteoforigin:,,,/res/Folder_16x.png"/>
-        </Button>
-        <TextBox IsReadOnly="True" Text="{Binding FolderPath}" Margin="30,0,30,0" Height="30" VerticalAlignment="Bottom"/>
-        <Button HorizontalAlignment="Right" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom" Grid.ColumnSpan="1"
-                Command="{Binding OpenExplorerCommand}">
-            <Image Source="../res/Open_16x.png"/>
-        </Button>
-        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="51,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
-            <Image Source="../res/Checkmark_16x.png" />
-        </Button>
-        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
-            <Image Source="../res/Cancel_16x.png"/>
-        </Button>
-        <ToggleButton Grid.Column="2" Margin="0,10,10.2,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
-            <Image Source="../res/Rectangle_16x.png" />
-        </ToggleButton>
-        <ToggleButton Content="A" FontSize="16" FontWeight="Bold" FontFamily="Century" Grid.Column="2" Margin="0,10,45.2,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
-        </ToggleButton>
-        <Button Grid.Column="2" HorizontalAlignment="Right" Margin="0,10,80.2,0" Width="30" Height="30" VerticalAlignment="Top">
-            <Rectangle Width="20" Height="20" Fill="#FFCC3333"/>
-        </Button>
-        <Button HorizontalAlignment="Left" Width="30" Height="30" VerticalAlignment="Top">
+
+        <!-- 左上ボタン群-->
+        <Button HorizontalAlignment="Left" Width="30" Height="30" VerticalAlignment="Top"
+                Command="{Binding UpdateFileListCommand}">
             <iconPacks:PackIconMaterial Kind="Refresh" Foreground="DarkGreen" />
         </Button>
         <Button HorizontalAlignment="Left" Margin="30,0,0,0" Width="30" Height="30" VerticalAlignment="Top">
@@ -61,5 +32,45 @@
         <Button Margin="0,0,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
             <iconPacks:PackIconMaterial Kind="Delete" Foreground="Gray" />
         </Button>
+        
+        <!--ファイルリスト-->
+        <ListView Margin="0,30,0,30" ItemsSource="{Binding FileItems}" SelectionMode="Single">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding FileName}">ファイル</GridViewColumn>
+                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding FolderPath}">フォルダー</GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        
+        <!--左下ボタン群-->
+        <Button HorizontalAlignment="Left" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom"
+                Command="{Binding FolderSelectCommand}">
+            <Image Source="pack://siteoforigin:,,,/res/Folder_16x.png"/>
+        </Button>
+        <TextBox IsReadOnly="True" Text="{Binding FolderPath}" Margin="30,0,30,0" Height="30" VerticalAlignment="Bottom"/>
+        <Button HorizontalAlignment="Right" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom" Grid.ColumnSpan="1"
+                Command="{Binding OpenExplorerCommand}">
+            <Image Source="../res/Open_16x.png"/>
+        </Button>
+        
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center"/>
+
+        <!--メイン上部ボタン群-->
+        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
+            <Image Source="../res/Cancel_16x.png"/>
+        </Button>
+        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="51,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
+            <Image Source="../res/Checkmark_16x.png" />
+        </Button>
+        <Button Grid.Column="2" HorizontalAlignment="Right" Margin="0,10,80.2,0" Width="30" Height="30" VerticalAlignment="Top">
+            <Rectangle Width="20" Height="20" Fill="#FFCC3333"/>
+        </Button>
+        <ToggleButton Content="A" FontSize="16" FontWeight="Bold" FontFamily="Century" Grid.Column="2" Margin="0,10,45.2,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
+        </ToggleButton>
+        <ToggleButton Grid.Column="2" Margin="0,10,10.2,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
+            <Image Source="../res/Rectangle_16x.png" />
+        </ToggleButton>
+
     </Grid>
 </Window>
