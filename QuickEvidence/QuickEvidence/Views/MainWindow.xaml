@@ -29,12 +29,15 @@
         <Button HorizontalAlignment="Left" Margin="60,0,0,0" Width="30" Height="30" VerticalAlignment="Top">
             <iconPacks:PackIconMaterial Kind="ArrowDown" Foreground="Gray" />
         </Button>
-        <Button Margin="0,0,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
+        <Button Margin="0,0,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
+                Command="{Binding DeleteFileCommand}">
             <iconPacks:PackIconMaterial Kind="Delete" Foreground="Gray" />
         </Button>
         
         <!--ファイルリスト-->
-        <ListView Margin="0,30,0,30" ItemsSource="{Binding FileItems}" SelectionMode="Single">
+        <ListView Margin="0,30,0,30" SelectionMode="Single"
+                  ItemsSource="{Binding FileItems}"
+                  SelectedItem="{Binding SelectedFile}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="200" DisplayMemberBinding="{Binding FileName}">ファイル</GridViewColumn>

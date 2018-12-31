@@ -12,6 +12,8 @@ namespace QuickEvidence.ViewModels
 {
 	public class MainWindowViewModel : BindableBase
 	{
+        const string APP_NAME = "QuickEvidence";
+
         public MainWindowViewModel()
         {
             FolderPath = Properties.Settings.Default.FolderPath;
@@ -35,6 +37,13 @@ namespace QuickEvidence.ViewModels
         {
             get { return _fileItems; }
             set { SetProperty(ref _fileItems, value); }
+        }
+
+        private FileItemViewModel _selectedFile;
+        public FileItemViewModel SelectedFile
+        {
+            get { return _selectedFile; }
+            set { SetProperty(ref _selectedFile, value); }
         }
 
         /// <summary>
@@ -89,6 +98,9 @@ namespace QuickEvidence.ViewModels
             }
         }
 
+        /// <summary>
+        /// ファイル一覧の更新
+        /// </summary>
         private DelegateCommand _updateFileListCommand;
         public DelegateCommand UpdateFileListCommand =>
             _updateFileListCommand ?? (_updateFileListCommand = new DelegateCommand(ExecuteUpdateFileListCommand));
@@ -96,6 +108,24 @@ namespace QuickEvidence.ViewModels
         void ExecuteUpdateFileListCommand()
         {
             UpdateFileList();
+        }
+
+        /// <summary>
+        /// ファイルの削除
+        /// </summary>
+        private DelegateCommand _deleteFileCommand;
+        public DelegateCommand DeleteFileCommand =>
+            _deleteFileCommand ?? (_deleteFileCommand = new DelegateCommand(ExecuteDeleteFileCommand));
+
+        void ExecuteDeleteFileCommand()
+        {
+            if (SelectedFile != null && 
+                MessageBoxResult.No == MessageBox.Show(SelectedFile.FileName + " を削除します。\nよろしいですか？",
+                APP_NAME, MessageBoxButton.YesNo))
+            {
+                return;
+            }
+            DeleteSelectedFile();
         }
 
         ///////////////////////////////////////////////
@@ -130,6 +160,26 @@ namespace QuickEvidence.ViewModels
                     FolderPath = Path.GetDirectoryName(item).Replace(FolderPath, "."),
                     FolderFullPath = Path.GetDirectoryName(item)
                 });
+            }
+        }
+
+        /// <summary>
+        /// 選択されたファイルの削除
+        /// </summary>
+        private void DeleteSelectedFile()
+        {
+            if (SelectedFile != null)
+            {
+                var fullPath = Path.Combine(SelectedFile.FolderFullPath, SelectedFile.FileName);
+                try
+                {
+                    File.Delete(fullPath);
+                    FileItems.Remove(SelectedFile);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
             }
         }
     }
