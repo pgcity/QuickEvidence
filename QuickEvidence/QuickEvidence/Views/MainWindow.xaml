@@ -7,7 +7,8 @@
         xmlns:prism="http://prismlibrary.com/"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="MainWindow" Height="626.726" Width="1093.844" 
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        Title="MainWindow" Height="626.726" Width="1093.844" ResizeMode="{Binding ResizeMode}"
         WindowState="{Binding WindowState}" WindowStyle="{Binding WindowStyle}">
     <Window.InputBindings>
         <KeyBinding Key="F11" Command="{Binding FullScreenCommand}"/>
@@ -37,11 +38,16 @@
                 Command="{Binding DeleteFileCommand}">
             <iconPacks:PackIconMaterial Kind="Delete" Foreground="Gray" />
         </Button>
-        
+
         <!--ファイルリスト-->
         <ListView Margin="0,30,0,30" SelectionMode="Single"
                   ItemsSource="{Binding FileItems}"
                   SelectedItem="{Binding SelectedFile}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="200" DisplayMemberBinding="{Binding FileName}">ファイル</GridViewColumn>
@@ -49,7 +55,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        
+
         <!--左下ボタン群-->
         <Button HorizontalAlignment="Left" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom"
                 Command="{Binding FolderSelectCommand}">
@@ -60,8 +66,15 @@
                 Command="{Binding OpenExplorerCommand}">
             <Image Source="../res/Open_16x.png"/>
         </Button>
-        
+
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center"/>
+
+        <!--画像コンテンツ領域-->
+        <ScrollViewer Grid.Column="2" Margin="0,0,0,0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Viewbox>
+                <Image Source="{Binding ImageSource}"/>
+            </Viewbox>
+        </ScrollViewer>
 
         <!--メイン上部ボタン群-->
         <Button Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
@@ -70,12 +83,12 @@
         <Button Grid.Column="2" HorizontalAlignment="Left" Margin="51,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
             <Image Source="../res/Checkmark_16x.png" />
         </Button>
-        <Button Grid.Column="2" HorizontalAlignment="Right" Margin="0,10,80.2,0" Width="30" Height="30" VerticalAlignment="Top">
+        <Button Grid.Column="2" HorizontalAlignment="Right" Margin="0,10,90,0" Width="30" Height="30" VerticalAlignment="Top">
             <Rectangle Width="20" Height="20" Fill="#FFCC3333"/>
         </Button>
-        <ToggleButton Content="A" FontSize="16" FontWeight="Bold" FontFamily="Century" Grid.Column="2" Margin="0,10,45.2,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
+        <ToggleButton Content="A" FontSize="16" FontWeight="Bold" FontFamily="Century" Grid.Column="2" Margin="0,10,55,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
         </ToggleButton>
-        <ToggleButton Grid.Column="2" Margin="0,10,10.2,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
+        <ToggleButton Grid.Column="2" Margin="0,10,20,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
             <Image Source="../res/Rectangle_16x.png" />
         </ToggleButton>
 

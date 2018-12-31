@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace QuickEvidence.ViewModels
 {
@@ -59,6 +61,14 @@ namespace QuickEvidence.ViewModels
         /// <summary>
         /// フルスクリーン
         /// </summary>
+        /// 
+        private ResizeMode _resizeMode;
+        public ResizeMode ResizeMode
+        {
+            get { return _resizeMode; }
+            set { SetProperty(ref _resizeMode, value); }
+        }
+
         private WindowState _windowState = WindowState.Normal;
         public WindowState WindowState
         {
@@ -71,6 +81,16 @@ namespace QuickEvidence.ViewModels
         {
             get { return _windowStyle; }
             set { SetProperty(ref _windowStyle, value); }
+        }
+
+        /// <summary>
+        /// イメージソース
+        /// </summary>
+        private ImageSource _imageSource;
+        public ImageSource ImageSource
+        {
+            get { return _imageSource; }
+            set { SetProperty(ref _imageSource, value); }
         }
 
         ///////////////////////////////////////////////
@@ -177,8 +197,21 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteFullScreenCommand()
         {
+            ResizeMode = (WindowState != WindowState.Normal) ? ResizeMode.CanResizeWithGrip : ResizeMode.NoResize;
+            WindowStyle = (WindowState != WindowState.Normal) ? WindowStyle.SingleBorderWindow : WindowStyle.None;
             WindowState = (WindowState == WindowState.Normal)?WindowState.Maximized:WindowState.Normal;
-            WindowStyle = (WindowState == WindowState.Normal) ? WindowStyle.SingleBorderWindow : WindowStyle.None;
+        }
+
+        /// <summary>
+        /// ファイル選択変更
+        /// </summary>
+        private DelegateCommand _fileSelectionChangedCommand;
+        public DelegateCommand FileSelectionChangedCommand =>
+            _fileSelectionChangedCommand ?? (_fileSelectionChangedCommand = new DelegateCommand(ExecuteSearchItemSelectionChangedCommand));
+
+        void ExecuteSearchItemSelectionChangedCommand()
+        {
+            LoadImage();
         }
 
         ///////////////////////////////////////////////
@@ -312,6 +345,9 @@ namespace QuickEvidence.ViewModels
 
             try
             {
+                //ファイルを閉じる
+                ImageSource = null;
+
                 //ファイル1を一時ファイル名に変更
                 string tempFileName = "";
                 string tempFilePath;
@@ -340,6 +376,37 @@ namespace QuickEvidence.ViewModels
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// 画像を読み込む
+        /// </summary>
+        private void LoadImage()
+        {
+            if (SelectedFile == null)
+            {
+                ImageSource = null;
+                return;
+            }
+
+            // 拡張子チェック
+            var ext = Path.GetExtension(SelectedFile.FileName).ToLower();
+
+            if(ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp")
+            {
+                BitmapImage bmpImage = new BitmapImage();
+                FileStream stream = File.OpenRead(SelectedFile.FullPath);
+                bmpImage.BeginInit();
+                bmpImage.CacheOption = BitmapCacheOption.OnLoad;
+                bmpImage.StreamSource = stream;
+                bmpImage.EndInit();
+                stream.Close();
+                ImageSource = bmpImage;
+            }
+            else
+            {
+                ImageSource = null;
+            }
         }
     }
 }
