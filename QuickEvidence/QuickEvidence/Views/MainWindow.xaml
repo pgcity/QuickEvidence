@@ -7,10 +7,12 @@
         xmlns:prism="http://prismlibrary.com/"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="MainWindow" Height="626.726" Width="1093.844" WindowState="Maximized" WindowStyle="None">
-    <Window.Background>
-        <SolidColorBrush Color="White"/>
-    </Window.Background>
+        Title="MainWindow" Height="626.726" Width="1093.844" 
+        WindowState="{Binding WindowState}" WindowStyle="{Binding WindowStyle}">
+    <Window.InputBindings>
+        <KeyBinding Key="F11" Command="{Binding FullScreenCommand}"/>
+    </Window.InputBindings>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="283*"/>

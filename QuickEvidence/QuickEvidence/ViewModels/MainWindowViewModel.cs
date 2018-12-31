@@ -56,6 +56,22 @@ namespace QuickEvidence.ViewModels
             set { SetProperty(ref _folderPath, value); }
         }
 
+        /// <summary>
+        /// フルスクリーン
+        /// </summary>
+        private WindowState _windowState = WindowState.Normal;
+        public WindowState WindowState
+        {
+            get { return _windowState; }
+            set { SetProperty(ref _windowState, value); }
+        }
+
+        private WindowStyle _windowStyle = WindowStyle.SingleBorderWindow;
+        public WindowStyle WindowStyle
+        {
+            get { return _windowStyle; }
+            set { SetProperty(ref _windowStyle, value); }
+        }
 
         ///////////////////////////////////////////////
         // コマンド
@@ -150,6 +166,19 @@ namespace QuickEvidence.ViewModels
         void ExecuteOnDownFileCommand()
         {
             DownFile();
+        }
+
+        /// <summary>
+        /// フルスクリーンの切り替え
+        /// </summary>
+        private DelegateCommand _fullScreenCommand;
+        public DelegateCommand FullScreenCommand =>
+            _fullScreenCommand ?? (_fullScreenCommand = new DelegateCommand(ExecuteFullScreenCommand));
+
+        void ExecuteFullScreenCommand()
+        {
+            WindowState = (WindowState == WindowState.Normal)?WindowState.Maximized:WindowState.Normal;
+            WindowStyle = (WindowState == WindowState.Normal) ? WindowStyle.SingleBorderWindow : WindowStyle.None;
         }
 
         ///////////////////////////////////////////////
