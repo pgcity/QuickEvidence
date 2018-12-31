@@ -33,7 +33,7 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteFolderSelectCommand()
         {
-            var dlg = new CommonOpenFileDialog("フォルダ選択");
+            var dlg = new CommonOpenFileDialog("フォルダー選択");
             dlg.IsFolderPicker = true;
             var ret = dlg.ShowDialog();
             if (ret == CommonFileDialogResult.Ok)
@@ -41,6 +41,18 @@ namespace QuickEvidence.ViewModels
                 FolderPath = dlg.FileName;
                 Properties.Settings.Default.FolderPath = FolderPath;
                 Properties.Settings.Default.Save();
+            }
+        }
+
+        private DelegateCommand _openExplorerCommand;
+        public DelegateCommand OpenExplorerCommand =>
+            _openExplorerCommand ?? (_openExplorerCommand = new DelegateCommand(ExecuteOpenExplorerCommand));
+
+        void ExecuteOpenExplorerCommand()
+        {
+            if (Directory.Exists(FolderPath))
+            {
+                System.Diagnostics.Process.Start(FolderPath);
             }
         }
     }

@@ -30,7 +30,8 @@
             <Image Source="pack://siteoforigin:,,,/res/Folder_16x.png"/>
         </Button>
         <TextBox IsReadOnly="True" Text="{Binding FolderPath}" Margin="30,0,30.2,0" Height="30" VerticalAlignment="Bottom"/>
-        <Button HorizontalAlignment="Right" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom" Grid.ColumnSpan="1">
+        <Button HorizontalAlignment="Right" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom" Grid.ColumnSpan="1"
+                Command="{Binding OpenExplorerCommand}">
             <Image Source="../res/Open_16x.png"/>
         </Button>
         <Button Grid.Column="2" HorizontalAlignment="Left" Margin="51,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
