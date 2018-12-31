@@ -23,10 +23,12 @@
                 Command="{Binding UpdateFileListCommand}">
             <iconPacks:PackIconMaterial Kind="Refresh" Foreground="DarkGreen" />
         </Button>
-        <Button HorizontalAlignment="Left" Margin="30,0,0,0" Width="30" Height="30" VerticalAlignment="Top">
-            <iconPacks:PackIconMaterial Kind="ArrowUp" Foreground="Gray" />
+        <Button HorizontalAlignment="Left" Margin="30,0,0,0" Width="30" Height="30" VerticalAlignment="Top"
+                Command="{Binding OnUpFileCommand}">
+            <iconPacks:PackIconMaterial Kind="ArrowUp" Foreground="Gray"/>
         </Button>
-        <Button HorizontalAlignment="Left" Margin="60,0,0,0" Width="30" Height="30" VerticalAlignment="Top">
+        <Button HorizontalAlignment="Left" Margin="60,0,0,0" Width="30" Height="30" VerticalAlignment="Top"
+                Command="{Binding OnDownFileCommand}">
             <iconPacks:PackIconMaterial Kind="ArrowDown" Foreground="Gray" />
         </Button>
         <Button Margin="0,0,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"

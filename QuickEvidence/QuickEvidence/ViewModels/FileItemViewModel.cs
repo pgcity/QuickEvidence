@@ -2,6 +2,7 @@
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace QuickEvidence.ViewModels
@@ -41,6 +42,17 @@ namespace QuickEvidence.ViewModels
         {
             get { return _folderFullPath; }
             set { SetProperty(ref _folderFullPath, value); }
+        }
+
+        /// <summary>
+        /// フルパス
+        /// </summary>
+        public string FullPath
+        {
+            get
+            {
+                return Path.Combine(FolderFullPath, FileName);
+            }
         }
     }
 }
