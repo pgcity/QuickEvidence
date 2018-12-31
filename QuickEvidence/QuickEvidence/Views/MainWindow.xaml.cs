@@ -23,6 +23,7 @@ namespace QuickEvidence.Views
         public MainWindow()
         {
             InitializeComponent();
+            
         }
     }
 }

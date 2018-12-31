@@ -25,10 +25,11 @@
             </ListView.View>
         </ListView>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center"/>
-        <Button HorizontalAlignment="Left" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom">
+        <Button HorizontalAlignment="Left" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom"
+                Command="{Binding FolderSelectCommand}">
             <Image Source="pack://siteoforigin:,,,/res/Folder_16x.png"/>
         </Button>
-        <Label Content="{Binding FolderPath}" HorizontalAlignment="Left" Margin="30,0,0,0" Width="229" Height="30" VerticalAlignment="Bottom"/>
+        <TextBox IsReadOnly="True" Text="{Binding FolderPath}" Margin="30,0,30.2,0" Height="30" VerticalAlignment="Bottom"/>
         <Button HorizontalAlignment="Right" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom" Grid.ColumnSpan="1">
             <Image Source="../res/Open_16x.png"/>
         </Button>
