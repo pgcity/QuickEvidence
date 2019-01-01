@@ -124,6 +124,16 @@ namespace QuickEvidence.ViewModels
             set { SetProperty(ref _viewBoxHeight, value); }
         }
 
+        /// <summary>
+        /// 選択中のツールバーボタン
+        /// </summary>
+        private string _selectedToolBarButton;
+        public string SelectedToolBarButton
+        {
+            get { return _selectedToolBarButton; }
+            set { SetProperty(ref _selectedToolBarButton, value); }
+        }
+
         ///////////////////////////////////////////////
         // コマンド
 

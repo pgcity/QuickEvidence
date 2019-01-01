@@ -8,6 +8,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         prism:ViewModelLocator.AutoWireViewModel="True"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:views="clr-namespace:QuickEvidence.Views"
         Title="QuickEvidence" Height="626.726" Width="1093.844" ResizeMode="{Binding ResizeMode}"
         WindowState="{Binding WindowState}" WindowStyle="{Binding WindowStyle}">
     <Window.InputBindings>
@@ -18,6 +19,11 @@
             <prism:InvokeCommandAction Command="{Binding MouseWheelCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
+    <Window.Resources>
+        <ResourceDictionary>
+            <views:ToggleConverter x:Key="toggleConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="283*"/>
@@ -104,9 +110,12 @@
         <Button Grid.Column="2" HorizontalAlignment="Right" Margin="0,10,90,0" Width="30" Height="30" VerticalAlignment="Top">
             <Rectangle Width="20" Height="20" Fill="#FFCC3333"/>
         </Button>
-        <ToggleButton Content="A" FontSize="16" FontWeight="Bold" FontFamily="Century" Grid.Column="2" Margin="0,10,55,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
+        <ToggleButton Content="A" FontSize="16" FontWeight="Bold" FontFamily="Century" Grid.Column="2" Margin="0,10,55,0" Height="30" 
+                      VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
+                      IsChecked="{Binding SelectedToolBarButton, Converter={StaticResource toggleConverter}, ConverterParameter=text}">
         </ToggleButton>
-        <ToggleButton Grid.Column="2" Margin="0,10,20,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30">
+        <ToggleButton Grid.Column="2" Margin="0,10,20,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
+                      IsChecked="{Binding SelectedToolBarButton, Converter={StaticResource toggleConverter}, ConverterParameter=rectangle}">
             <Image Source="../res/Rectangle_16x.png" />
         </ToggleButton>
 
