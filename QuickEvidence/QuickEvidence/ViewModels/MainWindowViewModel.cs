@@ -62,7 +62,7 @@ namespace QuickEvidence.ViewModels
         /// フルスクリーン
         /// </summary>
         /// 
-        private ResizeMode _resizeMode;
+        private ResizeMode _resizeMode = ResizeMode.CanResizeWithGrip;
         public ResizeMode ResizeMode
         {
             get { return _resizeMode; }
