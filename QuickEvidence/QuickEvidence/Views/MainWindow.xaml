@@ -24,7 +24,7 @@
             <views:ToggleConverter x:Key="toggleConverter"/>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid>
+    <Grid Name="mainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="283*"/>
             <ColumnDefinition Width="Auto"/>
@@ -79,9 +79,41 @@
 
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center"/>
 
+        <!--選択中・入力中の枠-->
+        <Rectangle Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top"
+                   Margin="{Binding SelectingRectangleMargin}" 
+                   Width="{Binding SelectingRectangleWidth}"
+                   Height="{Binding SelectingRectangleHeight}"
+                   Fill="Transparent" Stroke="Blue" StrokeThickness="2"
+                   Panel.ZIndex="1000"
+                   Visibility="{Binding RectangleVisibility}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseMove">
+                    <prism:InvokeCommandAction Command="{Binding MouseMoveCommand}"/>
+                </i:EventTrigger>
+                <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                    <prism:InvokeCommandAction Command="{Binding MouseLeftButtonDownCommand}"/>
+                </i:EventTrigger>
+                <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                    <prism:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Rectangle>
+
         <!--画像コンテンツ領域-->
-        <ScrollViewer Grid.Column="2" Margin="0,0,0,0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+        <ScrollViewer Name="mainScrollViewer" Grid.Column="2" Margin="0,0,0,0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Background="#FFF6F6F6">
             <Viewbox Width="{Binding ViewBoxWidth}" Height="{Binding ViewBoxHeight}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseMove">
+                        <prism:InvokeCommandAction Command="{Binding MouseMoveCommand}"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                        <prism:InvokeCommandAction Command="{Binding MouseLeftButtonDownCommand}"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                        <prism:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <Image Source="{Binding ImageSource}"/>
             </Viewbox>
         </ScrollViewer>
@@ -118,6 +150,5 @@
                       IsChecked="{Binding SelectedToolBarButton, Converter={StaticResource toggleConverter}, ConverterParameter=rectangle}">
             <Image Source="../res/Rectangle_16x.png" />
         </ToggleButton>
-
     </Grid>
 </Window>

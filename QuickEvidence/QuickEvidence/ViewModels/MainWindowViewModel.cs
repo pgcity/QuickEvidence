@@ -1,6 +1,7 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using Prism.Commands;
 using Prism.Mvvm;
+using QuickEvidence.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +16,7 @@ namespace QuickEvidence.ViewModels
 {
 	public class MainWindowViewModel : BindableBase
 	{
+        public IGetPosition GetPositionIF { get; internal set; }
         const string APP_NAME = "QuickEvidence";
 
         public MainWindowViewModel()
@@ -31,6 +33,12 @@ namespace QuickEvidence.ViewModels
 
         ///////////////////////////////////////////////
         // プロパティ
+        private Point DragStartPos {
+            get;set;
+        }
+
+        ///////////////////////////////////////////////
+        // バインディング用プロパティ
 
         /// <summary>
         /// ファイル一覧
@@ -87,8 +95,8 @@ namespace QuickEvidence.ViewModels
         /// <summary>
         /// イメージソース
         /// </summary>
-        private ImageSource _imageSource;
-        public ImageSource ImageSource
+        private RenderTargetBitmap _imageSource;
+        public RenderTargetBitmap ImageSource
         {
             get { return _imageSource; }
             set { SetProperty(ref _imageSource, value); }
@@ -132,6 +140,46 @@ namespace QuickEvidence.ViewModels
         {
             get { return _selectedToolBarButton; }
             set { SetProperty(ref _selectedToolBarButton, value); }
+        }
+
+        /// <summary>
+        /// 選択中四角形のマージン
+        /// </summary>
+        private Thickness _selectingRectangleMargin;
+        public Thickness SelectingRectangleMargin
+        {
+            get { return _selectingRectangleMargin; }
+            set { SetProperty(ref _selectingRectangleMargin, value); }
+        }
+
+        /// <summary>
+        /// 選択中四角形の幅
+        /// </summary>
+        private int _selectingRectangleWidth = 100;
+        public int SelectingRectangleWidth
+        {
+            get { return _selectingRectangleWidth; }
+            set { SetProperty(ref _selectingRectangleWidth, value); }
+        }
+
+        /// <summary>
+        /// 選択中四角形の高さ
+        /// </summary>
+        private int _selectingRectangleHeight = 100;
+        public int SelectingRectangleHeight
+        {
+            get { return _selectingRectangleHeight; }
+            set { SetProperty(ref _selectingRectangleHeight, value); }
+        }
+
+        /// <summary>
+        /// 選択中四角形の表示状態
+        /// </summary>
+        private Visibility _rectangleVisibility = Visibility.Hidden;
+        public Visibility RectangleVisibility
+        {
+            get { return _rectangleVisibility; }
+            set { SetProperty(ref _rectangleVisibility, value); }
         }
 
         ///////////////////////////////////////////////
@@ -312,6 +360,72 @@ namespace QuickEvidence.ViewModels
                     SelectedFile = nextFile;
                 }
             }
+        }
+
+        /// <summary>
+        /// マウスカーソル移動時
+        /// </summary>
+        private DelegateCommand<MouseEventArgs> _mouseMoveCommand;
+        public DelegateCommand<MouseEventArgs> MouseMoveCommand =>
+            _mouseMoveCommand ?? (_mouseMoveCommand = new DelegateCommand<MouseEventArgs>(ExecuteMouseMoveCommand));
+
+        void ExecuteMouseMoveCommand(MouseEventArgs arg)
+        {
+            if(arg.LeftButton == MouseButtonState.Pressed)
+            {
+                var pt = GetPositionIF.GetPosition(arg);
+
+                if((int)pt.X < (int)DragStartPos.X)
+                {
+                    SelectingRectangleWidth = (int)(DragStartPos.X - pt.X);
+                    SelectingRectangleMargin = new Thickness(pt.X, SelectingRectangleMargin.Top, 0, 0);
+                }
+                else
+                {
+                    SelectingRectangleWidth = (int)(pt.X - DragStartPos.X);
+                    SelectingRectangleMargin = new Thickness(DragStartPos.X, SelectingRectangleMargin.Top, 0, 0);
+
+                }
+                if ((int)pt.Y < (int)DragStartPos.Y)
+                {
+                    SelectingRectangleHeight = (int)(DragStartPos.Y - pt.Y);
+                    SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, pt.Y, 0, 0);
+                }
+                else
+                {
+                    SelectingRectangleHeight = (int)(pt.Y - DragStartPos.Y);
+                    SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, DragStartPos.Y, 0, 0);
+                }
+            }
+        }
+
+        /// <summary>
+        /// マウス左クリック
+        /// </summary>
+        private DelegateCommand<MouseEventArgs> _mouseLeftButtonDownCommand;
+        public DelegateCommand<MouseEventArgs> MouseLeftButtonDownCommand =>
+            _mouseLeftButtonDownCommand ?? (_mouseLeftButtonDownCommand = new DelegateCommand<MouseEventArgs>(ExecuteMouseLeftButtonDownCommand));
+
+        void ExecuteMouseLeftButtonDownCommand(MouseEventArgs arg)
+        {
+            DragStartPos = GetPositionIF.GetPosition(arg);
+            SelectingRectangleMargin = new Thickness(DragStartPos.X, DragStartPos.Y, 0, 0);
+            SelectingRectangleWidth = 0;
+            SelectingRectangleHeight = 0;
+            RectangleVisibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// マウス左ボタン解除
+        /// </summary>
+        private DelegateCommand<MouseEventArgs> _mouseLeftButtonUpCommand;
+        public DelegateCommand<MouseEventArgs> MouseLeftButtonUpCommand =>
+            _mouseLeftButtonUpCommand ?? (_mouseLeftButtonUpCommand = new DelegateCommand<MouseEventArgs>(ExecuteMouseLeftButtonUpCommand));
+
+        void ExecuteMouseLeftButtonUpCommand(MouseEventArgs arg)
+        {
+            var pt = GetPositionIF.GetPosition(arg);
+            RectangleVisibility = Visibility.Hidden;
         }
 
         ///////////////////////////////////////////////
@@ -496,15 +610,25 @@ namespace QuickEvidence.ViewModels
 
             if(ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp")
             {
-                // 読み込み
-                BitmapImage bmpImage = new BitmapImage();
+                // ビットマップの読み込み
+                BitmapImage tmpBitmap = new BitmapImage();
                 FileStream stream = File.OpenRead(SelectedFile.FullPath);
-                bmpImage.BeginInit();
-                bmpImage.CacheOption = BitmapCacheOption.OnLoad;
-                bmpImage.StreamSource = stream;
-                bmpImage.EndInit();
+                tmpBitmap.BeginInit();
+                tmpBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                tmpBitmap.StreamSource = stream;
+                tmpBitmap.EndInit();
                 stream.Close();
-                ImageSource = bmpImage;
+
+                // 描画可能なビットマップに変更
+                DrawingVisual drawingVisual = new DrawingVisual();
+                DrawingContext drawingContext = drawingVisual.RenderOpen();
+                drawingContext.DrawImage(tmpBitmap, new Rect(0, 0, tmpBitmap.Width, tmpBitmap.Height));
+                drawingContext.Close();
+
+                RenderTargetBitmap bitmap = new RenderTargetBitmap((int)tmpBitmap.Width, (int)tmpBitmap.Height,
+                                                                tmpBitmap.DpiX, tmpBitmap.DpiY, PixelFormats.Pbgra32);
+                bitmap.Render(drawingVisual);
+                ImageSource = bitmap;
 
                 // 倍率設定
                 UpdateExpansionRate();
