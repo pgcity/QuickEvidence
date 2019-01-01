@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -91,6 +92,36 @@ namespace QuickEvidence.ViewModels
         {
             get { return _imageSource; }
             set { SetProperty(ref _imageSource, value); }
+        }
+
+        /// <summary>
+        /// 拡大率(%)
+        /// </summary>
+        private int _expansionRate = 100;
+        public int ExpansionRate
+        {
+            get { return _expansionRate; }
+            set { SetProperty(ref _expansionRate, value / 10 * 10); }
+        }
+
+        /// <summary>
+        /// ViewBoxの幅（拡大率に合わせて調整する）
+        /// </summary>
+        private int? _viewBoxWidth;
+        public int? ViewBoxWidth
+        {
+            get { return _viewBoxWidth; }
+            set { SetProperty(ref _viewBoxWidth, value); }
+        }
+
+        /// <summary>
+        /// ViewBoxの高さ（拡大率に合わせて調整する）
+        /// </summary>
+        private int? _viewBoxHeight;
+        public int? ViewBoxHeight
+        {
+            get { return _viewBoxHeight; }
+            set { SetProperty(ref _viewBoxHeight, value); }
         }
 
         ///////////////////////////////////////////////
@@ -212,6 +243,65 @@ namespace QuickEvidence.ViewModels
         void ExecuteSearchItemSelectionChangedCommand()
         {
             LoadImage();
+        }
+
+        /// <summary>
+        /// 拡大縮小操作
+        /// </summary>
+        private DelegateCommand _expansionRateChangedCommand;
+        public DelegateCommand ExpansionRateChangedCommand =>
+            _expansionRateChangedCommand ?? (_expansionRateChangedCommand = new DelegateCommand(ExecuteExpansionRateChangedCommand));
+
+        void ExecuteExpansionRateChangedCommand()
+        {
+            UpdateExpansionRate();
+        }
+
+        /// <summary>
+        /// マウスホイール操作
+        /// </summary>
+        private DelegateCommand<MouseWheelEventArgs> _mouseWheelCommand;
+        public DelegateCommand<MouseWheelEventArgs> MouseWheelCommand =>
+            _mouseWheelCommand ?? (_mouseWheelCommand = new DelegateCommand<MouseWheelEventArgs>(ExecuteMouseWheelCommand));
+
+        void ExecuteMouseWheelCommand(MouseWheelEventArgs arg)
+        {
+            arg.Handled = true;
+            if ((Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) == KeyStates.Down ||
+               (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) == KeyStates.Down)
+            {
+                if (arg.Delta > 0)
+                {
+                    if (ExpansionRate < 500)
+                    {
+                        ExpansionRate += 10;
+                    }
+                }
+                else
+                {
+                    if (0 < ExpansionRate)
+                    {
+                        ExpansionRate -= 10;
+                    }
+                }
+            }
+            else
+            {
+                // ファイル前後移動
+                FileItemViewModel nextFile = null;
+                if (arg.Delta > 0)
+                {
+                    nextFile = GetNextFile(-1);
+                }
+                else
+                {
+                    nextFile = GetNextFile(1);
+                }
+                if(nextFile != null)
+                {
+                    SelectedFile = nextFile;
+                }
+            }
         }
 
         ///////////////////////////////////////////////
@@ -386,6 +476,8 @@ namespace QuickEvidence.ViewModels
             if (SelectedFile == null)
             {
                 ImageSource = null;
+                ViewBoxWidth = null;
+                ViewBoxHeight = null;
                 return;
             }
 
@@ -394,6 +486,7 @@ namespace QuickEvidence.ViewModels
 
             if(ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp")
             {
+                // 読み込み
                 BitmapImage bmpImage = new BitmapImage();
                 FileStream stream = File.OpenRead(SelectedFile.FullPath);
                 bmpImage.BeginInit();
@@ -402,11 +495,30 @@ namespace QuickEvidence.ViewModels
                 bmpImage.EndInit();
                 stream.Close();
                 ImageSource = bmpImage;
+
+                // 倍率設定
+                UpdateExpansionRate();
             }
             else
             {
                 ImageSource = null;
+                ViewBoxWidth = null;
+                ViewBoxHeight = null;
             }
+        }
+
+        /// <summary>
+        /// 拡大率更新
+        /// </summary>
+        private void UpdateExpansionRate()
+        {
+            if(ImageSource == null)
+            {
+                return;
+            }
+            // 倍率設定
+            ViewBoxWidth = (int)ImageSource.Width * ExpansionRate / 100;
+            ViewBoxHeight = (int)ImageSource.Height * ExpansionRate / 100;
         }
     }
 }

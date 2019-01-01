@@ -8,12 +8,16 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         prism:ViewModelLocator.AutoWireViewModel="True"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        Title="MainWindow" Height="626.726" Width="1093.844" ResizeMode="{Binding ResizeMode}"
+        Title="QuickEvidence" Height="626.726" Width="1093.844" ResizeMode="{Binding ResizeMode}"
         WindowState="{Binding WindowState}" WindowStyle="{Binding WindowStyle}">
     <Window.InputBindings>
         <KeyBinding Key="F11" Command="{Binding FullScreenCommand}"/>
     </Window.InputBindings>
-
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="PreviewMouseWheel">
+            <prism:InvokeCommandAction Command="{Binding MouseWheelCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="283*"/>
@@ -70,8 +74,8 @@
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center"/>
 
         <!--画像コンテンツ領域-->
-        <ScrollViewer Grid.Column="2" Margin="0,0,0,0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <Viewbox>
+        <ScrollViewer Grid.Column="2" Margin="0,0,0,0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+            <Viewbox Width="{Binding ViewBoxWidth}" Height="{Binding ViewBoxHeight}">
                 <Image Source="{Binding ImageSource}"/>
             </Viewbox>
         </ScrollViewer>
@@ -83,6 +87,20 @@
         <Button Grid.Column="2" HorizontalAlignment="Left" Margin="51,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
             <Image Source="../res/Checkmark_16x.png" />
         </Button>
+
+        <TextBlock Grid.Column="2" Width="70" Margin="0,15,280.2,0"
+                   TextAlignment="Right" HorizontalAlignment="Right" Height="30" VerticalAlignment="Top"
+                   Text="{Binding ExpansionRate, StringFormat={}{0}%}"/>
+        <Slider Grid.Column="2" Width="150" Margin="0,10,125.2,0" HorizontalAlignment="Right" Height="30" VerticalAlignment="Top"
+                Maximum="500" Minimum="10" 
+                LargeChange="10" SmallChange="10"
+                Value="{Binding ExpansionRate}" IsMoveToPointEnabled="True">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="ValueChanged">
+                    <i:InvokeCommandAction Command="{Binding ExpansionRateChangedCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Slider>
         <Button Grid.Column="2" HorizontalAlignment="Right" Margin="0,10,90,0" Width="30" Height="30" VerticalAlignment="Top">
             <Rectangle Width="20" Height="20" Fill="#FFCC3333"/>
         </Button>
