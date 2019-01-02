@@ -84,9 +84,12 @@
                    Margin="{Binding SelectingRectangleMargin}" 
                    Width="{Binding SelectingRectangleWidth}"
                    Height="{Binding SelectingRectangleHeight}"
-                   Fill="Transparent" Stroke="Blue" StrokeThickness="2"
+                   Fill="Transparent" StrokeThickness="2"
                    Panel.ZIndex="1000"
                    Visibility="{Binding RectangleVisibility}">
+            <Rectangle.Stroke>
+                <SolidColorBrush Color="{Binding SelectedColor}" />
+            </Rectangle.Stroke>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseMove">
                     <prism:InvokeCommandAction Command="{Binding MouseMoveCommand}"/>
@@ -139,8 +142,13 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Slider>
-        <Button Grid.Column="2" HorizontalAlignment="Right" Margin="0,10,90,0" Width="30" Height="30" VerticalAlignment="Top">
-            <Rectangle Width="20" Height="20" Fill="#FFCC3333"/>
+        <Button Grid.Column="2" HorizontalAlignment="Right" Margin="0,10,90,0" Width="30" Height="30" VerticalAlignment="Top"
+                Command="{Binding ColorPickCommand}">
+            <Rectangle Width="20" Height="20">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{Binding SelectedColor}"/>
+                </Rectangle.Fill>
+            </Rectangle>
         </Button>
         <ToggleButton Content="A" FontSize="16" FontWeight="Bold" FontFamily="Century" Grid.Column="2" Margin="0,10,55,0" Height="30" 
                       VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"

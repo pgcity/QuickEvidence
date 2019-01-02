@@ -17,6 +17,7 @@ namespace QuickEvidence.ViewModels
 	public class MainWindowViewModel : BindableBase
 	{
         public IGetPosition GetPositionIF { get; internal set; }
+        public MainWindow ColorDialogIF { get; internal set; }
         const string APP_NAME = "QuickEvidence";
 
         public MainWindowViewModel()
@@ -209,6 +210,16 @@ namespace QuickEvidence.ViewModels
         {
             get { return _rectangleVisibility; }
             set { SetProperty(ref _rectangleVisibility, value); }
+        }
+
+        /// <summary>
+        /// 描画する色
+        /// </summary>
+        private Color _selectedColor = Color.FromRgb(255, 0, 0);
+        public Color SelectedColor
+        {
+            get { return _selectedColor; }
+            set { SetProperty(ref _selectedColor, value); }
         }
 
         ///////////////////////////////////////////////
@@ -465,6 +476,22 @@ namespace QuickEvidence.ViewModels
             }
         }
 
+        /// <summary>
+        /// 色選択
+        /// </summary>
+        private DelegateCommand _colorPickCommand;
+        public DelegateCommand ColorPickCommand =>
+            _colorPickCommand ?? (_colorPickCommand = new DelegateCommand(ExecuteColorPickCommand));
+
+        void ExecuteColorPickCommand()
+        {
+            var color = ColorDialogIF.ShowColorDialog();
+            if(color != null)
+            {
+                SelectedColor = (Color)color;
+            }
+        }
+
         ///////////////////////////////////////////////
         // ロジック
 
@@ -703,7 +730,7 @@ namespace QuickEvidence.ViewModels
             //拡大率で割る
             var startPos = new Point(DragStartPosViewBox.X * 100 / ExpansionRate, DragStartPosViewBox.Y * 100 / ExpansionRate);
             var endPos = new Point(DragEndPosViewBox.X * 100 / ExpansionRate, DragEndPosViewBox.Y * 100 / ExpansionRate);
-            drawingContext.DrawRectangle(Brushes.Transparent, new Pen(Brushes.Blue, 2), new Rect(startPos, endPos));
+            drawingContext.DrawRectangle(Brushes.Transparent, new Pen(new SolidColorBrush(SelectedColor), 2), new Rect(startPos, endPos));
             drawingContext.Close();
 
             ImageSource.Render(drawingVisual);
