@@ -591,10 +591,11 @@ namespace QuickEvidence.ViewModels
                 return;
             }
 
-            IEnumerable<string> list = new List<string>();
+            List<string> list = new List<string>();
             try
             {
-                list = Directory.GetFiles(FolderPath, "*.*", SearchOption.AllDirectories);
+                list = new List<string>(Directory.GetFiles(FolderPath, "*.*", SearchOption.AllDirectories));
+                list.Sort(new PathComparer());
             }
             catch (Exception e)
             {
@@ -608,6 +609,29 @@ namespace QuickEvidence.ViewModels
                     FolderPath = Path.GetDirectoryName(item).Replace(FolderPath, "."),
                     FolderFullPath = Path.GetDirectoryName(item)
                 });
+            }
+        }
+
+        /// <summary>
+        /// 比較
+        /// </summary>
+        private class PathComparer : IComparer<string>
+        {
+            public int Compare(string x, string y)
+            {
+                string folder1 = Path.GetDirectoryName(x);
+                string folder2 = Path.GetDirectoryName(y);
+                string file1 = Path.GetFileName(x);
+                string file2 = Path.GetFileName(y);
+
+                var cmp1 = folder1.CompareTo(folder2);
+                var cmp2 = file1.CompareTo(file2);
+
+                if(cmp1 != 0)
+                {
+                    return cmp1;
+                }
+                return cmp2;
             }
         }
 
