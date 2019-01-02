@@ -384,10 +384,10 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteMouseWheelCommand(MouseWheelEventArgs arg)
         {
-            arg.Handled = true;
             if ((Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) == KeyStates.Down ||
                (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) == KeyStates.Down)
             {
+                arg.Handled = true;
                 if (arg.Delta > 0)
                 {
                     if (ExpansionRate < 500)
@@ -403,8 +403,13 @@ namespace QuickEvidence.ViewModels
                     }
                 }
             }
-            else
+            else if ((Keyboard.GetKeyStates(Key.LeftShift) & KeyStates.Down) == KeyStates.Down ||
+               (Keyboard.GetKeyStates(Key.RightShift) & KeyStates.Down) == KeyStates.Down)
             {
+                // Shift+ホイールでスクロール
+            }else
+            {
+                arg.Handled = true;
                 // ファイル前後移動
                 if (IsModify)
                 {
