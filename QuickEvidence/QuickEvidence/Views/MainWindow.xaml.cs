@@ -18,9 +18,19 @@ namespace QuickEvidence.Views
             vm.GetPositionIF = this;
         }
 
-        public Point GetPosition(MouseEventArgs arg)
+        public Point GetPositionFromScrollViewer(MouseEventArgs arg)
         {
             return arg.GetPosition(mainScrollViewer);
+        }
+
+        /// <summary>
+        /// オフセットを引く
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public Point GetPositionFromViewBox(MouseEventArgs arg)
+        {
+            return arg.GetPosition(mainViewBox);
         }
     }
 }

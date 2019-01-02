@@ -101,8 +101,8 @@
         </Rectangle>
 
         <!--画像コンテンツ領域-->
-        <ScrollViewer Name="mainScrollViewer" Grid.Column="2" Margin="0,0,0,0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Background="#FFF6F6F6">
-            <Viewbox Width="{Binding ViewBoxWidth}" Height="{Binding ViewBoxHeight}">
+        <ScrollViewer Name="mainScrollViewer" Grid.Column="2" Margin="0,0,0,0" HorizontalScrollBarVisibility="Visible" Background="#FFF6F6F6">
+            <Viewbox Name="mainViewBox" Width="{Binding ViewBoxWidth}" Height="{Binding ViewBoxHeight}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseMove">
                         <prism:InvokeCommandAction Command="{Binding MouseMoveCommand}"/>

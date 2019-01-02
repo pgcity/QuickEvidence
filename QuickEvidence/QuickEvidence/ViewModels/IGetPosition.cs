@@ -5,6 +5,7 @@ namespace QuickEvidence.ViewModels
 {
     public interface IGetPosition
     {
-        Point GetPosition(MouseEventArgs arg);
+        Point GetPositionFromViewBox(MouseEventArgs arg);
+        Point GetPositionFromScrollViewer(MouseEventArgs arg);
     }
 }

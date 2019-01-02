@@ -33,9 +33,38 @@ namespace QuickEvidence.ViewModels
 
         ///////////////////////////////////////////////
         // プロパティ
-        private Point DragStartPos {
+
+        /// <summary>
+        /// ドラッグ開始座標
+        /// </summary>
+        private Point DragStartPosScrollViewer {
             get;set;
         }
+
+        /// <summary>
+        /// ドラッグ終了座標
+        /// </summary>
+        private Point DragEndPosScrollViewer
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// ドラッグ開始座標
+        /// </summary>
+        private Point DragStartPosViewBox
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// ドラッグ終了座標
+        /// </summary>
+        private Point DragEndPosViewBox
+        {
+            get; set;
+        }
+
 
         ///////////////////////////////////////////////
         // バインディング用プロパティ
@@ -373,28 +402,29 @@ namespace QuickEvidence.ViewModels
         {
             if(arg.LeftButton == MouseButtonState.Pressed)
             {
-                var pt = GetPositionIF.GetPosition(arg);
+                var ptScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
+                var ptViewBox = GetPositionIF.GetPositionFromViewBox(arg);
 
-                if((int)pt.X < (int)DragStartPos.X)
+                if ((int)ptScrollViewer.X < (int)DragStartPosScrollViewer.X)
                 {
-                    SelectingRectangleWidth = (int)(DragStartPos.X - pt.X);
-                    SelectingRectangleMargin = new Thickness(pt.X, SelectingRectangleMargin.Top, 0, 0);
+                    SelectingRectangleWidth = (int)(DragStartPosScrollViewer.X - ptScrollViewer.X);
+                    SelectingRectangleMargin = new Thickness(ptScrollViewer.X, SelectingRectangleMargin.Top, 0, 0);
                 }
                 else
                 {
-                    SelectingRectangleWidth = (int)(pt.X - DragStartPos.X);
-                    SelectingRectangleMargin = new Thickness(DragStartPos.X, SelectingRectangleMargin.Top, 0, 0);
+                    SelectingRectangleWidth = (int)(ptScrollViewer.X - DragStartPosScrollViewer.X);
+                    SelectingRectangleMargin = new Thickness(DragStartPosScrollViewer.X, SelectingRectangleMargin.Top, 0, 0);
 
                 }
-                if ((int)pt.Y < (int)DragStartPos.Y)
+                if ((int)ptScrollViewer.Y < (int)DragStartPosScrollViewer.Y)
                 {
-                    SelectingRectangleHeight = (int)(DragStartPos.Y - pt.Y);
-                    SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, pt.Y, 0, 0);
+                    SelectingRectangleHeight = (int)(DragStartPosScrollViewer.Y - ptScrollViewer.Y);
+                    SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, ptScrollViewer.Y, 0, 0);
                 }
                 else
                 {
-                    SelectingRectangleHeight = (int)(pt.Y - DragStartPos.Y);
-                    SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, DragStartPos.Y, 0, 0);
+                    SelectingRectangleHeight = (int)(ptScrollViewer.Y - DragStartPosScrollViewer.Y);
+                    SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, DragStartPosScrollViewer.Y, 0, 0);
                 }
             }
         }
@@ -408,8 +438,9 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteMouseLeftButtonDownCommand(MouseEventArgs arg)
         {
-            DragStartPos = GetPositionIF.GetPosition(arg);
-            SelectingRectangleMargin = new Thickness(DragStartPos.X, DragStartPos.Y, 0, 0);
+            DragStartPosViewBox = GetPositionIF.GetPositionFromViewBox(arg);
+            DragStartPosScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
+            SelectingRectangleMargin = new Thickness(DragStartPosScrollViewer.X, DragStartPosScrollViewer.Y, 0, 0);
             SelectingRectangleWidth = 0;
             SelectingRectangleHeight = 0;
             RectangleVisibility = Visibility.Visible;
@@ -424,8 +455,14 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteMouseLeftButtonUpCommand(MouseEventArgs arg)
         {
-            var pt = GetPositionIF.GetPosition(arg);
-            RectangleVisibility = Visibility.Hidden;
+            var pt = GetPositionIF.GetPositionFromViewBox(arg);
+            if(RectangleVisibility == Visibility.Visible)
+            {
+                RectangleVisibility = Visibility.Hidden;
+                DragEndPosViewBox = GetPositionIF.GetPositionFromViewBox(arg);
+                DragEndPosScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
+                DrawRectangle();
+            }
         }
 
         ///////////////////////////////////////////////
@@ -653,6 +690,23 @@ namespace QuickEvidence.ViewModels
             // 倍率設定
             ViewBoxWidth = (int)ImageSource.Width * ExpansionRate / 100;
             ViewBoxHeight = (int)ImageSource.Height * ExpansionRate / 100;
+        }
+
+        /// <summary>
+        /// 四角形を描画
+        /// </summary>
+        private void DrawRectangle()
+        {
+            DrawingVisual drawingVisual = new DrawingVisual();
+            DrawingContext drawingContext = drawingVisual.RenderOpen();
+
+            //拡大率で割る
+            var startPos = new Point(DragStartPosViewBox.X * 100 / ExpansionRate, DragStartPosViewBox.Y * 100 / ExpansionRate);
+            var endPos = new Point(DragEndPosViewBox.X * 100 / ExpansionRate, DragEndPosViewBox.Y * 100 / ExpansionRate);
+            drawingContext.DrawRectangle(Brushes.Transparent, new Pen(Brushes.Blue, 2), new Rect(startPos, endPos));
+            drawingContext.Close();
+
+            ImageSource.Render(drawingVisual);
         }
     }
 }
