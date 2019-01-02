@@ -18,6 +18,7 @@ namespace QuickEvidence.ViewModels
 	{
         public IGetPosition GetPositionIF { get; internal set; }
         public MainWindow ColorDialogIF { get; internal set; }
+        public MainWindow TextInputWindowIF { get; internal set; }
         const string APP_NAME = "QuickEvidence";
 
         public MainWindowViewModel()
@@ -484,6 +485,17 @@ namespace QuickEvidence.ViewModels
                 SelectingRectangleHeight = 0;
                 RectangleVisibility = Visibility.Visible;
             }
+            if(SelectedToolBarButton == "text")
+            {
+                DragStartPosViewBox = GetPositionIF.GetPositionFromViewBox(arg);
+                DragStartPosScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
+
+                var text = TextInputWindowIF.ShowTextInputWindow();
+                if(text != null)
+                {
+                    DrawText(text);
+                }
+            }
         }
 
         /// <summary>
@@ -824,6 +836,33 @@ namespace QuickEvidence.ViewModels
             var startPos = new Point(DragStartPosViewBox.X * 100 / ExpansionRate, DragStartPosViewBox.Y * 100 / ExpansionRate);
             var endPos = new Point(DragEndPosViewBox.X * 100 / ExpansionRate, DragEndPosViewBox.Y * 100 / ExpansionRate);
             drawingContext.DrawRectangle(Brushes.Transparent, new Pen(new SolidColorBrush(SelectedColor), 2), new Rect(startPos, endPos));
+            drawingContext.Close();
+
+            ImageSource.Render(drawingVisual);
+            IsModify = true;
+        }
+
+        /// <summary>
+        /// テキストを描画
+        /// </summary>
+        /// <param name="text"></param>
+        private void DrawText(string text)
+        {
+            DrawingVisual drawingVisual = new DrawingVisual();
+            DrawingContext drawingContext = drawingVisual.RenderOpen();
+
+            //拡大率で割る
+            var textPos = new Point(DragStartPosViewBox.X * 100 / ExpansionRate, DragStartPosViewBox.Y * 100 / ExpansionRate);
+
+            drawingContext.DrawText(
+                new FormattedText(
+                    text, 
+                    System.Globalization.CultureInfo.CurrentCulture, 
+                    FlowDirection.LeftToRight,
+                    new Typeface("メイリオ"),
+                    14,
+                    new SolidColorBrush(SelectedColor)),
+                textPos);
             drawingContext.Close();
 
             ImageSource.Render(drawingVisual);
