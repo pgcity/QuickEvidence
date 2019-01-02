@@ -36,22 +36,26 @@
         <!-- 左上ボタン群-->
         <Button HorizontalAlignment="Left" Width="30" Height="30" VerticalAlignment="Top"
                 Command="{Binding UpdateFileListCommand}"
-                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                ToolTip="再読み込み">
             <iconPacks:PackIconMaterial Kind="Refresh" Foreground="DarkGreen" />
         </Button>
         <Button HorizontalAlignment="Left" Margin="30,0,0,0" Width="30" Height="30" VerticalAlignment="Top"
                 Command="{Binding OnUpFileCommand}"
-                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                ToolTip="上のファイルと内容を交換">
             <iconPacks:PackIconMaterial Kind="ArrowUp" Foreground="Gray"/>
         </Button>
         <Button HorizontalAlignment="Left" Margin="60,0,0,0" Width="30" Height="30" VerticalAlignment="Top"
                 Command="{Binding OnDownFileCommand}"
-                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                ToolTip="下のファイルと内容を交換">
             <iconPacks:PackIconMaterial Kind="ArrowDown" Foreground="Gray" />
         </Button>
         <Button Margin="0,0,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
                 Command="{Binding DeleteFileCommand}"
-                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                ToolTip="削除">
             <iconPacks:PackIconMaterial Kind="Delete" Foreground="Gray" />
         </Button>
 
@@ -76,14 +80,16 @@
         <!--左下ボタン群-->
         <Button HorizontalAlignment="Left" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom"
                 Command="{Binding FolderSelectCommand}"
-                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                ToolTip="フォルダーを変更">
             <Image Source="pack://siteoforigin:,,,/res/Folder_16x.png"/>
         </Button>
         <TextBox IsReadOnly="True" Text="{Binding FolderPath}" Margin="30,0,30,0" Height="30" VerticalAlignment="Bottom"
                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"/>
         <Button HorizontalAlignment="Right" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom" Grid.ColumnSpan="1"
                 Command="{Binding OpenExplorerCommand}"
-                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                ToolTip="エクスプローラーでフォルダーを開く">
             <Image Source="../res/Open_16x.png"/>
         </Button>
 
@@ -134,12 +140,14 @@
         <!--メイン上部ボタン群-->
         <Button Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,0" Width="30" Height="30" VerticalAlignment="Top"
                 Visibility="{Binding IsModify, Converter={StaticResource booleanToVisibilityConverter}}"
-                Command="{Binding CancelCommand}">
+                Command="{Binding CancelCommand}"
+                ToolTip="変更をキャンセル">
             <Image Source="../res/Cancel_16x.png"/>
         </Button>
         <Button Grid.Column="2" HorizontalAlignment="Left" Margin="51,10,0,0" Width="30" Height="30" VerticalAlignment="Top"
                 Visibility="{Binding IsModify, Converter={StaticResource booleanToVisibilityConverter}}"
-                Command="{Binding SaveCommand}">
+                Command="{Binding SaveCommand}"
+                ToolTip="変更を保存">
             <Image Source="../res/Checkmark_16x.png" />
         </Button>
 
@@ -157,7 +165,8 @@
             </i:Interaction.Triggers>
         </Slider>
         <Button Grid.Column="2" HorizontalAlignment="Right" Margin="0,10,90,0" Width="30" Height="30" VerticalAlignment="Top"
-                Command="{Binding ColorPickCommand}">
+                Command="{Binding ColorPickCommand}"
+                ToolTip="色を変更">
             <Rectangle Width="20" Height="20">
                 <Rectangle.Fill>
                     <SolidColorBrush Color="{Binding SelectedColor}"/>
@@ -166,10 +175,12 @@
         </Button>
         <ToggleButton Content="A" FontSize="16" FontWeight="Bold" FontFamily="Century" Grid.Column="2" Margin="0,10,55,0" Height="30" 
                       VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
-                      IsChecked="{Binding SelectedToolBarButton, Converter={StaticResource toggleConverter}, ConverterParameter=text}">
+                      IsChecked="{Binding SelectedToolBarButton, Converter={StaticResource toggleConverter}, ConverterParameter=text}"
+                      ToolTip="テキスト入力">
         </ToggleButton>
         <ToggleButton Grid.Column="2" Margin="0,10,20,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
-                      IsChecked="{Binding SelectedToolBarButton, Converter={StaticResource toggleConverter}, ConverterParameter=rectangle}">
+                      IsChecked="{Binding SelectedToolBarButton, Converter={StaticResource toggleConverter}, ConverterParameter=rectangle}"
+                      ToolTip="枠を描画">
             <Image Source="../res/Rectangle_16x.png" />
         </ToggleButton>
     </Grid>
