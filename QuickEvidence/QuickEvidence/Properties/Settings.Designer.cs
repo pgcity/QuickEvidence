@@ -70,5 +70,17 @@ namespace QuickEvidence.Properties {
                 this["Color_B"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SelectedToolBarButton {
+            get {
+                return ((string)(this["SelectedToolBarButton"]));
+            }
+            set {
+                this["SelectedToolBarButton"] = value;
+            }
+        }
     }
 }

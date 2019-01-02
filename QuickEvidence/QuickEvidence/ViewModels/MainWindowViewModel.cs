@@ -22,6 +22,7 @@ namespace QuickEvidence.ViewModels
 
         public MainWindowViewModel()
         {
+            SelectedToolBarButton = Properties.Settings.Default.SelectedToolBarButton;
             SelectedColor = Color.FromRgb(
                 Properties.Settings.Default.Color_R,
                 Properties.Settings.Default.Color_G,
@@ -173,7 +174,11 @@ namespace QuickEvidence.ViewModels
         public string SelectedToolBarButton
         {
             get { return _selectedToolBarButton; }
-            set { SetProperty(ref _selectedToolBarButton, value); }
+            set {
+                SetProperty(ref _selectedToolBarButton, value);
+                Properties.Settings.Default.SelectedToolBarButton = value;
+                Properties.Settings.Default.Save();
+            }
         }
 
         /// <summary>
@@ -431,29 +436,32 @@ namespace QuickEvidence.ViewModels
         {
             if(arg.LeftButton == MouseButtonState.Pressed)
             {
-                var ptScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
-                var ptViewBox = GetPositionIF.GetPositionFromViewBox(arg);
+                if (SelectedToolBarButton == "rectangle")
+                {
+                    var ptScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
+                    var ptViewBox = GetPositionIF.GetPositionFromViewBox(arg);
 
-                if ((int)ptScrollViewer.X < (int)DragStartPosScrollViewer.X)
-                {
-                    SelectingRectangleWidth = (int)(DragStartPosScrollViewer.X - ptScrollViewer.X);
-                    SelectingRectangleMargin = new Thickness(ptScrollViewer.X, SelectingRectangleMargin.Top, 0, 0);
-                }
-                else
-                {
-                    SelectingRectangleWidth = (int)(ptScrollViewer.X - DragStartPosScrollViewer.X);
-                    SelectingRectangleMargin = new Thickness(DragStartPosScrollViewer.X, SelectingRectangleMargin.Top, 0, 0);
+                    if ((int)ptScrollViewer.X < (int)DragStartPosScrollViewer.X)
+                    {
+                        SelectingRectangleWidth = (int)(DragStartPosScrollViewer.X - ptScrollViewer.X);
+                        SelectingRectangleMargin = new Thickness(ptScrollViewer.X, SelectingRectangleMargin.Top, 0, 0);
+                    }
+                    else
+                    {
+                        SelectingRectangleWidth = (int)(ptScrollViewer.X - DragStartPosScrollViewer.X);
+                        SelectingRectangleMargin = new Thickness(DragStartPosScrollViewer.X, SelectingRectangleMargin.Top, 0, 0);
 
-                }
-                if ((int)ptScrollViewer.Y < (int)DragStartPosScrollViewer.Y)
-                {
-                    SelectingRectangleHeight = (int)(DragStartPosScrollViewer.Y - ptScrollViewer.Y);
-                    SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, ptScrollViewer.Y, 0, 0);
-                }
-                else
-                {
-                    SelectingRectangleHeight = (int)(ptScrollViewer.Y - DragStartPosScrollViewer.Y);
-                    SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, DragStartPosScrollViewer.Y, 0, 0);
+                    }
+                    if ((int)ptScrollViewer.Y < (int)DragStartPosScrollViewer.Y)
+                    {
+                        SelectingRectangleHeight = (int)(DragStartPosScrollViewer.Y - ptScrollViewer.Y);
+                        SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, ptScrollViewer.Y, 0, 0);
+                    }
+                    else
+                    {
+                        SelectingRectangleHeight = (int)(ptScrollViewer.Y - DragStartPosScrollViewer.Y);
+                        SelectingRectangleMargin = new Thickness(SelectingRectangleMargin.Left, DragStartPosScrollViewer.Y, 0, 0);
+                    }
                 }
             }
         }
@@ -467,12 +475,15 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteMouseLeftButtonDownCommand(MouseEventArgs arg)
         {
-            DragStartPosViewBox = GetPositionIF.GetPositionFromViewBox(arg);
-            DragStartPosScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
-            SelectingRectangleMargin = new Thickness(DragStartPosScrollViewer.X, DragStartPosScrollViewer.Y, 0, 0);
-            SelectingRectangleWidth = 0;
-            SelectingRectangleHeight = 0;
-            RectangleVisibility = Visibility.Visible;
+            if(SelectedToolBarButton == "rectangle")
+            {
+                DragStartPosViewBox = GetPositionIF.GetPositionFromViewBox(arg);
+                DragStartPosScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
+                SelectingRectangleMargin = new Thickness(DragStartPosScrollViewer.X, DragStartPosScrollViewer.Y, 0, 0);
+                SelectingRectangleWidth = 0;
+                SelectingRectangleHeight = 0;
+                RectangleVisibility = Visibility.Visible;
+            }
         }
 
         /// <summary>
@@ -484,13 +495,16 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteMouseLeftButtonUpCommand(MouseEventArgs arg)
         {
-            var pt = GetPositionIF.GetPositionFromViewBox(arg);
-            if(RectangleVisibility == Visibility.Visible)
+            if (SelectedToolBarButton == "rectangle")
             {
-                RectangleVisibility = Visibility.Hidden;
-                DragEndPosViewBox = GetPositionIF.GetPositionFromViewBox(arg);
-                DragEndPosScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
-                DrawRectangle();
+                var pt = GetPositionIF.GetPositionFromViewBox(arg);
+                if (RectangleVisibility == Visibility.Visible)
+                {
+                    RectangleVisibility = Visibility.Hidden;
+                    DragEndPosViewBox = GetPositionIF.GetPositionFromViewBox(arg);
+                    DragEndPosScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
+                    DrawRectangle();
+                }
             }
         }
 
