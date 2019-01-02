@@ -83,7 +83,7 @@
                 Command="{Binding FolderSelectCommand}"
                 IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
                 ToolTip="フォルダーを変更">
-            <Image Source="pack://siteoforigin:,,,/res/Folder_16x.png"/>
+            <Image Source="/QuickEvidence;component/res/Folder_16x.png"/>
         </Button>
         <TextBox IsReadOnly="True" Text="{Binding FolderPath}" Margin="30,0,30,0" Height="30" VerticalAlignment="Bottom"
                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"/>
