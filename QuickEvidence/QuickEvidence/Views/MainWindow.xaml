@@ -13,6 +13,7 @@
         WindowState="{Binding WindowState}" WindowStyle="{Binding WindowStyle}">
     <Window.InputBindings>
         <KeyBinding Key="F11" Command="{Binding FullScreenCommand}"/>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveCommand}"/>
     </Window.InputBindings>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="PreviewMouseWheel">

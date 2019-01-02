@@ -555,6 +555,10 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteSaveCommand()
         {
+            if (!IsModify)
+            {
+                return;
+            }
             SaveImage();
             IsModify = false;
         }
