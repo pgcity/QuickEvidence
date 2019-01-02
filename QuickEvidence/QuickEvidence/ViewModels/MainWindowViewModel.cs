@@ -226,6 +226,16 @@ namespace QuickEvidence.ViewModels
             set { SetProperty(ref _selectedColor, value); }
         }
 
+        /// <summary>
+        /// 編集フラグ
+        /// </summary>
+        private bool _isModify = false;
+        public bool IsModify
+        {
+            get { return _isModify; }
+            set { SetProperty(ref _isModify, value); }
+        }
+
         ///////////////////////////////////////////////
         // コマンド
 
@@ -390,6 +400,10 @@ namespace QuickEvidence.ViewModels
             else
             {
                 // ファイル前後移動
+                if (IsModify)
+                {
+                    return;
+                }
                 FileItemViewModel nextFile = null;
                 if (arg.Delta > 0)
                 {
@@ -499,6 +513,32 @@ namespace QuickEvidence.ViewModels
                 Properties.Settings.Default.Color_B = SelectedColor.B;
                 Properties.Settings.Default.Save();
             }
+        }
+
+        /// <summary>
+        /// 保存
+        /// </summary>
+        private DelegateCommand _saveCommand;
+        public DelegateCommand SaveCommand =>
+            _saveCommand ?? (_saveCommand = new DelegateCommand(ExecuteSaveCommand));
+
+        void ExecuteSaveCommand()
+        {
+            SaveImage();
+            IsModify = false;
+        }
+
+        /// <summary>
+        /// キャンセル
+        /// </summary>
+        private DelegateCommand _cancelCommand;
+        public DelegateCommand CancelCommand =>
+            _cancelCommand ?? (_cancelCommand = new DelegateCommand(ExecuteCommandName));
+
+        void ExecuteCommandName()
+        {
+            LoadImage();
+            IsModify = false;
         }
 
         ///////////////////////////////////////////////
@@ -715,6 +755,36 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
+        /// 画像の保存
+        /// </summary>
+        private void SaveImage()
+        {
+            using (var os = new FileStream(SelectedFile.FullPath, FileMode.OpenOrCreate))
+            {
+                // 変換したBitmapをエンコードしてFileStreamに保存する。
+                // BitmapEncoder が指定されなかった場合は、PNG形式とする。
+                var ext = Path.GetExtension(SelectedFile.FileName).ToLower();
+                BitmapEncoder encoder = null;
+                switch (ext)
+                {
+                    case ".png":
+                        encoder = new PngBitmapEncoder();
+                        break;
+                    case ".jpg":
+                    case ".jpeg":
+                        encoder = new JpegBitmapEncoder();
+                        break;
+                    case ".bmp":
+                    default:
+                        encoder = new BmpBitmapEncoder();
+                        break;
+                }
+                encoder.Frames.Add(BitmapFrame.Create(ImageSource));
+                encoder.Save(os);
+            }
+        }
+
+        /// <summary>
         /// 拡大率更新
         /// </summary>
         private void UpdateExpansionRate()
@@ -743,6 +813,7 @@ namespace QuickEvidence.ViewModels
             drawingContext.Close();
 
             ImageSource.Render(drawingVisual);
+            IsModify = true;
         }
     }
 }

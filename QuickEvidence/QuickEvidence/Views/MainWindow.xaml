@@ -22,6 +22,8 @@
     <Window.Resources>
         <ResourceDictionary>
             <views:ToggleConverter x:Key="toggleConverter"/>
+            <views:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
+            <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
         </ResourceDictionary>
     </Window.Resources>
     <Grid Name="mainGrid">
@@ -33,26 +35,31 @@
 
         <!-- 左上ボタン群-->
         <Button HorizontalAlignment="Left" Width="30" Height="30" VerticalAlignment="Top"
-                Command="{Binding UpdateFileListCommand}">
+                Command="{Binding UpdateFileListCommand}"
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
             <iconPacks:PackIconMaterial Kind="Refresh" Foreground="DarkGreen" />
         </Button>
         <Button HorizontalAlignment="Left" Margin="30,0,0,0" Width="30" Height="30" VerticalAlignment="Top"
-                Command="{Binding OnUpFileCommand}">
+                Command="{Binding OnUpFileCommand}"
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
             <iconPacks:PackIconMaterial Kind="ArrowUp" Foreground="Gray"/>
         </Button>
         <Button HorizontalAlignment="Left" Margin="60,0,0,0" Width="30" Height="30" VerticalAlignment="Top"
-                Command="{Binding OnDownFileCommand}">
+                Command="{Binding OnDownFileCommand}"
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
             <iconPacks:PackIconMaterial Kind="ArrowDown" Foreground="Gray" />
         </Button>
         <Button Margin="0,0,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
-                Command="{Binding DeleteFileCommand}">
+                Command="{Binding DeleteFileCommand}"
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
             <iconPacks:PackIconMaterial Kind="Delete" Foreground="Gray" />
         </Button>
 
         <!--ファイルリスト-->
         <ListView Margin="0,30,0,30" SelectionMode="Single"
                   ItemsSource="{Binding FileItems}"
-                  SelectedItem="{Binding SelectedFile}">
+                  SelectedItem="{Binding SelectedFile}"
+                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
@@ -68,12 +75,15 @@
 
         <!--左下ボタン群-->
         <Button HorizontalAlignment="Left" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom"
-                Command="{Binding FolderSelectCommand}">
+                Command="{Binding FolderSelectCommand}"
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
             <Image Source="pack://siteoforigin:,,,/res/Folder_16x.png"/>
         </Button>
-        <TextBox IsReadOnly="True" Text="{Binding FolderPath}" Margin="30,0,30,0" Height="30" VerticalAlignment="Bottom"/>
+        <TextBox IsReadOnly="True" Text="{Binding FolderPath}" Margin="30,0,30,0" Height="30" VerticalAlignment="Bottom"
+                 IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"/>
         <Button HorizontalAlignment="Right" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom" Grid.ColumnSpan="1"
-                Command="{Binding OpenExplorerCommand}">
+                Command="{Binding OpenExplorerCommand}"
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
             <Image Source="../res/Open_16x.png"/>
         </Button>
 
@@ -122,10 +132,14 @@
         </ScrollViewer>
 
         <!--メイン上部ボタン群-->
-        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
+        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,0" Width="30" Height="30" VerticalAlignment="Top"
+                Visibility="{Binding IsModify, Converter={StaticResource booleanToVisibilityConverter}}"
+                Command="{Binding CancelCommand}">
             <Image Source="../res/Cancel_16x.png"/>
         </Button>
-        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="51,10,0,0" Width="30" Height="30" VerticalAlignment="Top">
+        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="51,10,0,0" Width="30" Height="30" VerticalAlignment="Top"
+                Visibility="{Binding IsModify, Converter={StaticResource booleanToVisibilityConverter}}"
+                Command="{Binding SaveCommand}">
             <Image Source="../res/Checkmark_16x.png" />
         </Button>
 
