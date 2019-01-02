@@ -34,5 +34,41 @@ namespace QuickEvidence.Properties {
                 this["FolderPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("255")]
+        public byte Color_R {
+            get {
+                return ((byte)(this["Color_R"]));
+            }
+            set {
+                this["Color_R"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte Color_G {
+            get {
+                return ((byte)(this["Color_G"]));
+            }
+            set {
+                this["Color_G"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte Color_B {
+            get {
+                return ((byte)(this["Color_B"]));
+            }
+            set {
+                this["Color_B"] = value;
+            }
+        }
     }
 }

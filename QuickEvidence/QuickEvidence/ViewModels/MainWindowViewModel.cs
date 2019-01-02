@@ -22,6 +22,10 @@ namespace QuickEvidence.ViewModels
 
         public MainWindowViewModel()
         {
+            SelectedColor = Color.FromRgb(
+                Properties.Settings.Default.Color_R,
+                Properties.Settings.Default.Color_G,
+                Properties.Settings.Default.Color_B);
             FolderPath = Properties.Settings.Default.FolderPath;
             if (!Directory.Exists(FolderPath))
             {
@@ -489,6 +493,11 @@ namespace QuickEvidence.ViewModels
             if(color != null)
             {
                 SelectedColor = (Color)color;
+
+                Properties.Settings.Default.Color_R = SelectedColor.R;
+                Properties.Settings.Default.Color_G = SelectedColor.G;
+                Properties.Settings.Default.Color_B = SelectedColor.B;
+                Properties.Settings.Default.Save();
             }
         }
 
