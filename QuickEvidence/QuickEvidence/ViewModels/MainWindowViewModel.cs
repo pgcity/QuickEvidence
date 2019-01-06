@@ -245,6 +245,16 @@ namespace QuickEvidence.ViewModels
             set { SetProperty(ref _isModify, value); }
         }
 
+        /// <summary>
+        /// 「開く」テキスト
+        /// </summary>
+        private string _openText =">>";
+        public string OpenText
+        {
+            get { return _openText; }
+            set { SetProperty(ref _openText, value); }
+        }
+
         ///////////////////////////////////////////////
         // コマンド
 

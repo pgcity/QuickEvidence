@@ -95,7 +95,7 @@ namespace QuickEvidence.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void OpenHyperlink_Clicked(object sender, RoutedEventArgs e)
         {
             MainWindowViewModel vm = (MainWindowViewModel)DataContext;
             if (vm.SelectedFile != null)

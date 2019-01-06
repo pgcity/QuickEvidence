@@ -71,12 +71,15 @@
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-            <DataGrid.ItemContainerStyle>
-                <Style TargetType="ListViewItem" BasedOn="{StaticResource MetroListViewItem}">
-                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
-                </Style>
-            </DataGrid.ItemContainerStyle>
             <DataGrid.Columns>
+                <DataGridHyperlinkColumn Width="30"
+                                         Binding="{Binding Path=DataContext.OpenText, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}">
+                    <DataGridHyperlinkColumn.ElementStyle>
+                        <Style>
+                            <EventSetter Event="Hyperlink.Click" Handler="OpenHyperlink_Clicked"/>
+                        </Style>
+                    </DataGridHyperlinkColumn.ElementStyle>
+                </DataGridHyperlinkColumn>
                 <DataGridTextColumn Width="200" Binding="{Binding FileName}" Header="ファイル"/>
                 <DataGridTextColumn Width="200" Binding="{Binding FolderPath}" Header="フォルダー" IsReadOnly="True"/>
             </DataGrid.Columns>
