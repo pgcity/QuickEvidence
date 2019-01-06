@@ -387,6 +387,10 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteMouseWheelCommand(MouseWheelEventArgs arg)
         {
+            if(arg.Source.GetType() == typeof(System.Windows.Controls.ListView))
+            {
+                return;
+            }
             if ((Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) == KeyStates.Down ||
                (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) == KeyStates.Down)
             {
