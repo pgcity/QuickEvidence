@@ -89,5 +89,19 @@ namespace QuickEvidence.Views
                 listView.ScrollIntoView(vm.SelectedFile);
             }
         }
+
+        /// <summary>
+        /// ファイルダブルクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            MainWindowViewModel vm = (MainWindowViewModel)DataContext;
+            if (vm.SelectedFile != null)
+            {
+                System.Diagnostics.Process.Start(vm.SelectedFile.FullPath);
+            }
+        }
     }
 }

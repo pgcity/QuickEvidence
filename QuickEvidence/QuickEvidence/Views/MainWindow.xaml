@@ -70,6 +70,11 @@
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource MetroListViewItem}">
+                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="200" DisplayMemberBinding="{Binding FileName}">ファイル</GridViewColumn>
