@@ -86,6 +86,9 @@ namespace QuickEvidence.ViewModels
             set { SetProperty(ref _fileItems, value); }
         }
 
+        /// <summary>
+        /// 選択されたファイル
+        /// </summary>
         private FileItemViewModel _selectedFile;
         public FileItemViewModel SelectedFile
         {

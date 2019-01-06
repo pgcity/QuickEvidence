@@ -64,7 +64,7 @@
         <ListView Margin="0,30,0,30" SelectionMode="Single"
                   ItemsSource="{Binding FileItems}"
                   SelectedItem="{Binding SelectedFile}"
-                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
+                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}" SelectionChanged="ListView_SelectionChanged">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>

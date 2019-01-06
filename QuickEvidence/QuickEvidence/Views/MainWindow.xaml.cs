@@ -72,5 +72,22 @@ namespace QuickEvidence.Views
             }
             return null;
         }
+
+        /// <summary>
+        /// ファイル一覧の選択変更
+        /// 変更先アイテムが見えるようスクロールする
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var listView = (System.Windows.Controls.ListView)sender;
+
+            MainWindowViewModel vm = (MainWindowViewModel)DataContext;
+            if(vm.SelectedFile != null)
+            {
+                listView.ScrollIntoView(vm.SelectedFile);
+            }
+        }
     }
 }
