@@ -100,7 +100,14 @@ namespace QuickEvidence.Views
             MainWindowViewModel vm = (MainWindowViewModel)DataContext;
             if (vm.SelectedFile != null)
             {
-                System.Diagnostics.Process.Start(vm.SelectedFile.FullPath);
+                try
+                {
+                    System.Diagnostics.Process.Start(vm.SelectedFile.FullPath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
     }
