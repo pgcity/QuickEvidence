@@ -620,6 +620,11 @@ namespace QuickEvidence.ViewModels
         /// </summary>
         private class PathComparer : IComparer<string>
         {
+            [System.Runtime.InteropServices.DllImport("shlwapi.dll",
+CharSet = System.Runtime.InteropServices.CharSet.Unicode,
+ExactSpelling = true)]
+            private static extern int StrCmpLogicalW(string x, string y);
+
             public int Compare(string x, string y)
             {
                 string folder1 = Path.GetDirectoryName(x);
@@ -627,10 +632,10 @@ namespace QuickEvidence.ViewModels
                 string file1 = Path.GetFileName(x);
                 string file2 = Path.GetFileName(y);
 
-                var cmp1 = folder1.CompareTo(folder2);
-                var cmp2 = file1.CompareTo(file2);
+                var cmp1 = StrCmpLogicalW(folder1, folder2);
+                var cmp2 = StrCmpLogicalW(file1, file2);
 
-                if(cmp1 != 0)
+                if (cmp1 != 0)
                 {
                     return cmp1;
                 }
