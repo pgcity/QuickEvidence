@@ -81,7 +81,7 @@ namespace QuickEvidence.Views
         /// <param name="e"></param>
         private void ListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            var listView = (System.Windows.Controls.ListView)sender;
+            var listView = (System.Windows.Controls.DataGrid)sender;
 
             MainWindowViewModel vm = (MainWindowViewModel)DataContext;
             if(vm.SelectedFile != null)

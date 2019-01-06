@@ -61,27 +61,26 @@
         </Button>
 
         <!--ファイルリスト-->
-        <ListView Margin="0,30,0,30" SelectionMode="Single"
+        <DataGrid Margin="0,30,0,30" SelectionMode="Single"
                   ItemsSource="{Binding FileItems}"
                   SelectedItem="{Binding SelectedFile}"
+                  AutoGenerateColumns="False" CanUserSortColumns="False" CanUserAddRows="False"
                   IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}" SelectionChanged="ListView_SelectionChanged">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-            <ListView.ItemContainerStyle>
+            <DataGrid.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MetroListViewItem}">
                     <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
                 </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding FileName}">ファイル</GridViewColumn>
-                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding FolderPath}">フォルダー</GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
+            </DataGrid.ItemContainerStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="200" Binding="{Binding FileName}" Header="ファイル"/>
+                <DataGridTextColumn Width="200" Binding="{Binding FolderPath}" Header="フォルダー" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
 
         <!--左下ボタン群-->
         <Button HorizontalAlignment="Left" Margin="0,0,0,0" Width="30" Height="30" VerticalAlignment="Bottom"
