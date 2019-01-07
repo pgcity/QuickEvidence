@@ -589,6 +589,10 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteCommandName()
         {
+            if (!IsModify)
+            {
+                return;
+            }
             LoadImage();
             IsModify = false;
         }
