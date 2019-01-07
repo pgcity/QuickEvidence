@@ -397,7 +397,7 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteMouseWheelCommand(MouseWheelEventArgs arg)
         {
-            if(arg.Source.GetType() == typeof(System.Windows.Controls.ListView))
+            if(arg.Source.GetType() == typeof(System.Windows.Controls.DataGrid))
             {
                 return;
             }
