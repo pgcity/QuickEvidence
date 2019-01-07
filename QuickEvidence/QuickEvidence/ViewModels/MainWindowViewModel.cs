@@ -401,6 +401,13 @@ namespace QuickEvidence.ViewModels
             {
                 return;
             }
+            //ドラッグ中は無効
+            if(RectangleVisibility == Visibility.Visible)
+            {
+                arg.Handled = true;
+                return;
+            }
+
             if ((Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) == KeyStates.Down ||
                (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) == KeyStates.Down)
             {
