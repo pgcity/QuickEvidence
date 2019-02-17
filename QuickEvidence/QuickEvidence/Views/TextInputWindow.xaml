@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"             
              prism:ViewModelLocator.AutoWireViewModel="True" Width="400" Height="206" ResizeMode="NoResize" Title="QuickEvidence">
-    <Grid Margin="0">
+    <Grid Margin="0" FocusManager.FocusedElement="{Binding ElementName=mainTextBox}">
         <Label Content="テキスト入力" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-        <TextBox Margin="10,40,9.6,52.8" TextWrapping="Wrap"
+        <TextBox Name="mainTextBox" Margin="10,40,9.6,52.8" TextWrapping="Wrap"
                  Text="{Binding Text}" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
         <Button Content="OK" Margin="0,0,89.6,9.8" HorizontalAlignment="Right" Width="75" Height="27" VerticalAlignment="Bottom" IsDefault="True"
                 Command="{Binding OKCommand}"/>
