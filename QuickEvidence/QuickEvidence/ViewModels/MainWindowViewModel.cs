@@ -317,13 +317,16 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteDeleteFileCommand()
         {
-            if (SelectedFile != null && 
+            if (SelectedFile != null &&
                 MessageBoxResult.No == MessageBox.Show(SelectedFile.FileName + " を削除します。\nよろしいですか？",
                 APP_NAME, MessageBoxButton.YesNo))
             {
                 return;
             }
-            DeleteSelectedFile();
+            if (!DeleteSelectedFile())
+            {
+                UpdateFileList(); //失敗したらファイルリスト更新
+            }
         }
 
         /// <summary>
@@ -335,7 +338,10 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteOnUpFileCommand()
         {
-            UpFile();
+            if (!UpFile())
+            {
+                UpdateFileList(); //失敗したらファイルリスト更新
+            }
         }
 
         /// <summary>
@@ -347,7 +353,10 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteOnDownFileCommand()
         {
-            DownFile();
+            if (!DownFile())
+            {
+                UpdateFileList(); //失敗したらファイルリスト更新
+            }
         }
 
         /// <summary>
@@ -583,8 +592,9 @@ namespace QuickEvidence.ViewModels
             {
                 return;
             }
-            SaveImage();
-            IsModify = false;
+            if (SaveImage()){
+                IsModify = false;
+            }
         }
 
         /// <summary>
@@ -671,11 +681,15 @@ ExactSpelling = true)]
         /// <summary>
         /// 選択されたファイルの削除
         /// </summary>
-        private void DeleteSelectedFile()
+        private bool DeleteSelectedFile()
         {
             if (SelectedFile != null)
             {
                 var fullPath = Path.Combine(SelectedFile.FolderFullPath, SelectedFile.FileName);
+                if (!File.Exists(fullPath))
+                {
+                    return false;
+                }
                 try
                 {
                     File.Delete(fullPath);
@@ -684,40 +698,57 @@ ExactSpelling = true)]
                 catch (Exception e)
                 {
                     MessageBox.Show(e.Message);
+                    return false;
                 }
+                return true;
             }
+            return false;
         }
 
         /// <summary>
         /// ファイルを上に移動
         /// </summary>
-        private void UpFile()
+        private bool UpFile()
         {
             var prevItem = GetNextFile(-1);
             if(prevItem == null)
             {
-                return;
+                return true; //前後のファイルアイテムがないだけなのでエラーにしない
             }
+
+            if (!File.Exists(prevItem.FullPath) || !File.Exists(SelectedFile.FullPath))
+            {
+                return false; //ファイルが存在しないのでエラーにする
+            }
+
             if (ReplaceFile(prevItem, SelectedFile))
             {
                 SelectedFile = prevItem;
             }
+            return true; //移動にかかわらずファイルは存在するので成功にする
         }
 
         /// <summary>
         /// ファイルを下に移動
         /// </summary>
-        private void DownFile()
+        private bool DownFile()
         {
             var nextItem = GetNextFile(1);
             if (nextItem == null)
             {
-                return;
+                return true;    //前後のファイルアイテムがないだけなのでエラーにしない
             }
-            if(ReplaceFile(SelectedFile, nextItem))
+
+            if (!File.Exists(SelectedFile.FullPath) || !File.Exists(nextItem.FullPath))
+            {
+                return false; //ファイルが存在しないのでエラーにする
+            }
+
+            if (ReplaceFile(SelectedFile, nextItem))
             {
                 SelectedFile = nextItem;
             }
+            return true; //移動にかかわらずファイルは存在するので成功にする
         }
 
         /// <summary>
@@ -812,11 +843,12 @@ ExactSpelling = true)]
 
             // 拡張子チェック
             var ext = Path.GetExtension(SelectedFile.FileName).ToLower();
-
-            if(ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp")
+            var exist = File.Exists(SelectedFile.FullPath);
+            if (exist && (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp"))
             {
                 // ビットマップの読み込み
                 BitmapImage tmpBitmap = new BitmapImage();
+
                 FileStream stream = File.OpenRead(SelectedFile.FullPath);
                 tmpBitmap.BeginInit();
                 tmpBitmap.CacheOption = BitmapCacheOption.OnLoad;
@@ -849,31 +881,40 @@ ExactSpelling = true)]
         /// <summary>
         /// 画像の保存
         /// </summary>
-        private void SaveImage()
+        private bool SaveImage()
         {
-            using (var os = new FileStream(SelectedFile.FullPath, FileMode.OpenOrCreate))
+            try
             {
-                // 変換したBitmapをエンコードしてFileStreamに保存する。
-                // BitmapEncoder が指定されなかった場合は、PNG形式とする。
-                var ext = Path.GetExtension(SelectedFile.FileName).ToLower();
-                BitmapEncoder encoder = null;
-                switch (ext)
+                using (var os = new FileStream(SelectedFile.FullPath, FileMode.OpenOrCreate))
                 {
-                    case ".png":
-                        encoder = new PngBitmapEncoder();
-                        break;
-                    case ".jpg":
-                    case ".jpeg":
-                        encoder = new JpegBitmapEncoder();
-                        break;
-                    case ".bmp":
-                    default:
-                        encoder = new BmpBitmapEncoder();
-                        break;
+                    // 変換したBitmapをエンコードしてFileStreamに保存する。
+                    // BitmapEncoder が指定されなかった場合は、PNG形式とする。
+                    var ext = Path.GetExtension(SelectedFile.FileName).ToLower();
+                    BitmapEncoder encoder = null;
+                    switch (ext)
+                    {
+                        case ".png":
+                            encoder = new PngBitmapEncoder();
+                            break;
+                        case ".jpg":
+                        case ".jpeg":
+                            encoder = new JpegBitmapEncoder();
+                            break;
+                        case ".bmp":
+                        default:
+                            encoder = new BmpBitmapEncoder();
+                            break;
+                    }
+                    encoder.Frames.Add(BitmapFrame.Create(ImageSource));
+                    encoder.Save(os);
+                    return true;
                 }
-                encoder.Frames.Add(BitmapFrame.Create(ImageSource));
-                encoder.Save(os);
+            }catch(Exception e)
+            {
+                MessageBox.Show("ファイルの保存でエラーが発生しました\n\n" + e.Message);
+                return false;
             }
+
         }
 
         /// <summary>

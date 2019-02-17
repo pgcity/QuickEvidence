@@ -24,17 +24,25 @@ namespace QuickEvidence.ViewModels
             get { return _fileName; }
             set {
                 var oldFullPath = FullPath;
-                if (_fileName != null && File.Exists(oldFullPath))
+                if (_fileName != null)
                 {
-                    //旧パスがある場合は変更を試みる。失敗なら変更しない。
-                    var newFullPath = Path.Combine(FolderFullPath, value);
-                    try
+                    if (File.Exists(oldFullPath))
                     {
-                        File.Move(oldFullPath, newFullPath);
+                        //旧パスがある場合は変更を試みる。失敗なら変更しない。
+                        var newFullPath = Path.Combine(FolderFullPath, value);
+                        try
+                        {
+                            File.Move(oldFullPath, newFullPath);
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show(e.Message);
+                            return;
+                        }
                     }
-                    catch (Exception e)
+                    else
                     {
-                        MessageBox.Show(e.Message);
+                        MessageBox.Show("ファイル名の変更でエラーが発生しました。\n選択されたファイルが見つかりません。");
                         return;
                     }
                 }
