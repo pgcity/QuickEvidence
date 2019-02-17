@@ -614,6 +614,69 @@ namespace QuickEvidence.ViewModels
             IsModify = false;
         }
 
+        /// <summary>
+        /// ViewBoxでの上下キー
+        /// </summary>
+        private DelegateCommand<KeyEventArgs> _viewBoxKeyDownCommand;
+        public DelegateCommand<KeyEventArgs> ViewBoxKeyDownCommand =>
+            _viewBoxKeyDownCommand ?? (_viewBoxKeyDownCommand = new DelegateCommand<KeyEventArgs>(ExecuteViewBoxKeyDownCommand));
+
+        void ExecuteViewBoxKeyDownCommand(KeyEventArgs arg)
+        {
+            if(arg.Key == Key.Up)
+            {
+                arg.Handled = true;
+                if (IsModify)
+                {
+                    return;
+                }
+                FileItemViewModel nextFile = GetNextFile(-1);
+
+                if (nextFile != null)
+                {
+                    SelectedFile = nextFile;
+                }
+            }
+            if (arg.Key == Key.Down)
+            {
+                arg.Handled = true;
+                if (IsModify)
+                {
+                    return;
+                }
+                FileItemViewModel nextFile = GetNextFile(1);
+
+                if (nextFile != null)
+                {
+                    SelectedFile = nextFile;
+                }
+            }
+            if (arg.Key == Key.Home)
+            {
+                arg.Handled = true;
+                if (IsModify)
+                {
+                    return;
+                }
+                if (FileItems.Count > 0)
+                {
+                    SelectedFile = FileItems[0];
+                }
+            }
+            if (arg.Key == Key.End)
+            {
+                arg.Handled = true;
+                if (IsModify)
+                {
+                    return;
+                }
+                if (FileItems.Count > 0)
+                {
+                    SelectedFile = FileItems[FileItems.Count - 1];
+                }
+            }
+        }
+
         ///////////////////////////////////////////////
         // ロジック
 

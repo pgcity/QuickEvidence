@@ -130,6 +130,11 @@
 
         <!--画像コンテンツ領域-->
         <ScrollViewer Name="mainScrollViewer" Grid.Column="2" Margin="0,0,0,0" HorizontalScrollBarVisibility="Visible" Background="#FFF6F6F6">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewKeyDown">
+                    <prism:InvokeCommandAction Command="{Binding ViewBoxKeyDownCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <Viewbox Name="mainViewBox" Width="{Binding ViewBoxWidth}" Height="{Binding ViewBoxHeight}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseMove">
