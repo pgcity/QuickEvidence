@@ -182,6 +182,16 @@ namespace QuickEvidence.ViewModels
                 SetProperty(ref _selectedToolBarButton, value);
                 Properties.Settings.Default.SelectedToolBarButton = value;
                 Properties.Settings.Default.Save();
+
+                // カーソル更新
+                if (value == "rectangle" || value == "text")
+                {
+                    ImageMouseCursor = Cursors.Cross;
+                }
+                else
+                {
+                    ImageMouseCursor = Cursors.Arrow;
+                }
             }
         }
 
@@ -253,6 +263,16 @@ namespace QuickEvidence.ViewModels
         {
             get { return _openText; }
             set { SetProperty(ref _openText, value); }
+        }
+
+        /// <summary>
+        /// 画像部分のマウスカーソル
+        /// </summary>
+        private Cursor _imageMouseCursor = Cursors.Arrow;
+        public Cursor ImageMouseCursor
+        {
+            get { return _imageMouseCursor; }
+            set { SetProperty(ref _imageMouseCursor, value); }
         }
 
         ///////////////////////////////////////////////

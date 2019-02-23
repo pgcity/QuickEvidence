@@ -111,7 +111,8 @@
                    Height="{Binding SelectingRectangleHeight}"
                    Fill="Transparent" StrokeThickness="2"
                    Panel.ZIndex="1000"
-                   Visibility="{Binding RectangleVisibility}">
+                   Visibility="{Binding RectangleVisibility}"
+                   Cursor="Cross">
             <Rectangle.Stroke>
                 <SolidColorBrush Color="{Binding SelectedColor}" />
             </Rectangle.Stroke>
@@ -147,7 +148,7 @@
                         <prism:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-                <Image Source="{Binding ImageSource}"/>
+                <Image Source="{Binding ImageSource}" Cursor="{Binding ImageMouseCursor}"/>
             </Viewbox>
         </ScrollViewer>
 
