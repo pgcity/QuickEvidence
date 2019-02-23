@@ -15,6 +15,7 @@
         <KeyBinding Key="F11" Command="{Binding FullScreenCommand}"/>
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveCommand}"/>
         <KeyBinding Key="Esc" Command="{Binding CancelCommand}"/>
+        <KeyBinding Key="F5" Command="{Binding UpdateCommand}"/>
     </Window.InputBindings>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="PreviewMouseWheel">

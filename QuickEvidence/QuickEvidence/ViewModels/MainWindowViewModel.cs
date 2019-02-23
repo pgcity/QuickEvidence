@@ -697,6 +697,21 @@ namespace QuickEvidence.ViewModels
             }
         }
 
+        /// <summary>
+        /// F5キー：ファイルリスト更新　ファイル編集中でなければ更新
+        /// </summary>
+        private DelegateCommand _updateCommand;
+        public DelegateCommand UpdateCommand =>
+            _updateCommand ?? (_updateCommand = new DelegateCommand(ExecuteUpdateCommand));
+
+        void ExecuteUpdateCommand()
+        {
+            if (!IsModify)
+            {
+                UpdateFileList();
+            }
+        }
+
         ///////////////////////////////////////////////
         // ロジック
 
@@ -705,6 +720,7 @@ namespace QuickEvidence.ViewModels
         /// </summary>
         void UpdateFileList()
         {
+            var tmpSelectedFile = SelectedFile;
             FileItems.Clear();
 
             if (!Directory.Exists(FolderPath))
@@ -730,6 +746,12 @@ namespace QuickEvidence.ViewModels
                     FolderPath = Path.GetDirectoryName(item).Replace(FolderPath, "."),
                     FolderFullPath = Path.GetDirectoryName(item)
                 });
+            }
+
+            //同じパスのファイルを再選択
+            if(tmpSelectedFile != null && FileItems != null)
+            {
+                SelectedFile = (from x in FileItems where x.FullPath == tmpSelectedFile.FullPath select x).FirstOrDefault();
             }
         }
 
