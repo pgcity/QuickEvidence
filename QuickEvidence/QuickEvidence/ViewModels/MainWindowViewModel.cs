@@ -5,6 +5,7 @@ using QuickEvidence.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -277,6 +278,37 @@ namespace QuickEvidence.ViewModels
 
         ///////////////////////////////////////////////
         // コマンド
+
+        /// <summary>
+        /// Window閉じるときの保存確認
+        /// </summary>
+        private DelegateCommand<CancelEventArgs> _windowClosingCommand;
+        public DelegateCommand<CancelEventArgs> WindowClosingCommand =>
+            _windowClosingCommand ?? (_windowClosingCommand = new DelegateCommand<CancelEventArgs>(ExecuteWindowClosingCommand));
+
+        void ExecuteWindowClosingCommand(CancelEventArgs arg)
+        {
+            if (!IsModify)
+            {
+                return;
+            }
+
+            switch (MessageBox.Show("変更を保存しますか？", "QuickEvidence", MessageBoxButton.YesNoCancel))
+            {
+                case MessageBoxResult.Yes:
+                    if (!SaveImage())
+                    {
+                        arg.Cancel = true;
+                    }
+                    break;
+                case MessageBoxResult.No:
+                    break;
+                case MessageBoxResult.Cancel:
+                    arg.Cancel = true;
+                    break;
+
+            }
+        }
 
         /// <summary>
         /// フォルダー選択ダイアログ

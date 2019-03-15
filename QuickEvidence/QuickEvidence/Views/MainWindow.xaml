@@ -18,6 +18,9 @@
         <KeyBinding Key="F5" Command="{Binding UpdateCommand}"/>
     </Window.InputBindings>
     <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <prism:InvokeCommandAction Command="{Binding WindowClosingCommand}"/>
+        </i:EventTrigger>
         <i:EventTrigger EventName="PreviewMouseWheel">
             <prism:InvokeCommandAction Command="{Binding MouseWheelCommand}"/>
         </i:EventTrigger>
