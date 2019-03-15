@@ -76,6 +76,13 @@ namespace QuickEvidence.ViewModels
         ///////////////////////////////////////////////
         // バインディング用プロパティ
 
+        private string _focusedName = "FileListGrid";
+        public string FocusedName
+        {
+            get { return _focusedName; }
+            set { SetProperty(ref _focusedName, value); }
+        }
+
         /// <summary>
         /// ファイル一覧
         /// </summary>
@@ -614,6 +621,7 @@ namespace QuickEvidence.ViewModels
             }
             if (SaveImage()){
                 IsModify = false;
+                FocusedName = "FileListGrid";
             }
         }
 
@@ -632,6 +640,8 @@ namespace QuickEvidence.ViewModels
             }
             LoadImage();
             IsModify = false;
+            FocusedName = "FileListGrid";
+
         }
 
         /// <summary>

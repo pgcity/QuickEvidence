@@ -63,11 +63,13 @@
         </Button>
 
         <!--ファイルリスト-->
-        <DataGrid Margin="0,30,0,30" SelectionMode="Single"
+        <DataGrid  Name="FileListGrid" Margin="0,30,0,30" SelectionMode="Single"
                   ItemsSource="{Binding FileItems}"
                   SelectedItem="{Binding SelectedFile}"
                   AutoGenerateColumns="False" CanUserSortColumns="False" CanUserAddRows="False"
-                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}" SelectionChanged="ListView_SelectionChanged">
+                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                  SelectionChanged="ListView_SelectionChanged"
+                  views:FocusExt.FocusedName="{Binding FocusedName, Mode=TwoWay}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
