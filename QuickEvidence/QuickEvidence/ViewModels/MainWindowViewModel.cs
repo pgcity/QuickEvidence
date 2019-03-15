@@ -967,8 +967,9 @@ ExactSpelling = true)]
                 drawingContext.DrawImage(tmpBitmap, new Rect(0, 0, tmpBitmap.Width, tmpBitmap.Height));
                 drawingContext.Close();
 
+                // 96dpi に固定して読み込み
                 RenderTargetBitmap bitmap = new RenderTargetBitmap((int)tmpBitmap.Width, (int)tmpBitmap.Height,
-                                                                tmpBitmap.DpiX, tmpBitmap.DpiY, PixelFormats.Pbgra32);
+                                                                /*tmpBitmap.DpiX*/96, /*tmpBitmap.DpiY*/96, PixelFormats.Pbgra32);
                 bitmap.Render(drawingVisual);
                 ImageSource = bitmap;
 
