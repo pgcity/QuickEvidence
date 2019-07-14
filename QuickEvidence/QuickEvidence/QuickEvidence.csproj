@@ -90,6 +90,7 @@
     </ApplicationDefinition>
     <Compile Include="ViewModels\TextInputWindowViewModel.cs" />
     <Compile Include="Views\IClose.cs" />
+    <Compile Include="Views\WindowTitleConverter.cs" />
     <Compile Include="Views\InverseBooleanConverter.cs" />
     <Compile Include="ViewModels\IColorDialog.cs" />
     <Compile Include="ViewModels\IGetPosition.cs" />
