@@ -82,6 +82,9 @@
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
                 </i:EventTrigger>
+                <i:EventTrigger EventName="PreviewKeyDown">
+                    <prism:InvokeCommandAction Command="{Binding FileListPreviewKeyDownCommand}"/>
+                </i:EventTrigger>
             </i:Interaction.Triggers>
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">

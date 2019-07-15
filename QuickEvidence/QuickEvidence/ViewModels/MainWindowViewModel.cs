@@ -395,6 +395,22 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
+        /// ファイルリストでのキー押下
+        /// </summary>
+        private DelegateCommand<KeyEventArgs> _fileListPreviewKeyDownCommand;
+        public DelegateCommand<KeyEventArgs> FileListPreviewKeyDownCommand =>
+            _fileListPreviewKeyDownCommand ?? (_fileListPreviewKeyDownCommand = new DelegateCommand<KeyEventArgs>(ExecuteFileListPreviewKeyDownCommand));
+
+        void ExecuteFileListPreviewKeyDownCommand(KeyEventArgs args)
+        {
+            if(args.Key == Key.Delete)  // Deleteキー：ファイルの削除
+            {
+                ExecuteDeleteFileCommand();
+                args.Handled = true;
+            }
+        }
+
+        /// <summary>
         /// ファイルを上に移動
         /// </summary>
         private DelegateCommand _onUpFileCommand;
@@ -843,6 +859,7 @@ ExactSpelling = true)]
             var deleteFiles = new List<FileItemViewModel>(SelectedFiles);
             if (SelectedFiles != null)
             {
+                FileItemViewModel nextItem = null; // 削除後に選択するアイテム
                 foreach (var deleteFile in deleteFiles)
                 {
                     var fullPath = Path.Combine(deleteFile.FolderFullPath, deleteFile.FileName);
@@ -852,6 +869,12 @@ ExactSpelling = true)]
                     }
                     try
                     {
+                        nextItem = GetNextFile(deleteFile, 1);
+                        if(nextItem == null)
+                        {
+                            nextItem = GetNextFile(deleteFile, -1);
+                        }
+
                         File.Delete(fullPath);
                         FileItems.Remove(deleteFile);
                     }
@@ -861,6 +884,8 @@ ExactSpelling = true)]
                         return false;
                     }
                 }
+
+                SelectedFile = nextItem;
                 return true;
             }
             return false;
