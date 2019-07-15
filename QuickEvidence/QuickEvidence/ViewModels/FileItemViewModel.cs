@@ -16,6 +16,16 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
+        /// 選択状態（VMからの設定専用）
+        /// </summary>
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set { SetProperty(ref _isSelected, value); }
+        }
+
+        /// <summary>
         /// ファイル名
         /// </summary>
         private string _fileName;

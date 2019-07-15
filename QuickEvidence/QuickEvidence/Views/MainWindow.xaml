@@ -70,16 +70,24 @@
         </Button>
 
         <!--ファイルリスト-->
-        <DataGrid Margin="0,30,0,30" SelectionMode="Single"
+        <DataGrid Margin="0,30,0,30" SelectionMode="Extended"
                   ItemsSource="{Binding FileItems}"
                   SelectedItem="{Binding SelectedFile}"
                   AutoGenerateColumns="False" CanUserSortColumns="False" CanUserAddRows="False"
                   IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}" SelectionChanged="ListView_SelectionChanged">
+            <i:Interaction.Behaviors>
+                <views:SelectedItemsBehavior SelectedItems="{Binding SelectedFiles}" />
+            </i:Interaction.Behaviors>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
+                    <Setter Property="IsSelected" Value="{Binding Path=IsSelected}" />
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridHyperlinkColumn Width="30"
                                          Binding="{Binding Path=DataContext.OpenText, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}">

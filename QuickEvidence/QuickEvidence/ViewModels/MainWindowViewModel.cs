@@ -88,13 +88,23 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
-        /// 選択されたファイル
+        /// 選択されたファイル（単一選択の取得・設定用）
         /// </summary>
         private FileItemViewModel _selectedFile;
         public FileItemViewModel SelectedFile
         {
             get { return _selectedFile; }
             set { SetProperty(ref _selectedFile, value); }
+        }
+
+        /// <summary>
+        /// 選択されたファイル（複数選択の取得用）
+        /// </summary>
+        private IList<FileItemViewModel> _selectedFiles = new List<FileItemViewModel>();
+        public IList<FileItemViewModel> SelectedFiles
+        {
+            get { return _selectedFiles; }
+            set { SetProperty(ref _selectedFiles, value); }
         }
 
         /// <summary>
@@ -369,15 +379,18 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteDeleteFileCommand()
         {
-            if (SelectedFile != null &&
-                MessageBoxResult.No == MessageBox.Show(SelectedFile.FileName + " を削除します。\nよろしいですか？",
-                APP_NAME, MessageBoxButton.YesNo))
+            if (SelectedFiles != null)
             {
-                return;
-            }
-            if (!DeleteSelectedFile())
-            {
-                UpdateFileList(); //失敗したらファイルリスト更新
+                var itemName = SelectedFiles.Count > 1 ? "選択された " + SelectedFiles.Count + " 個の項目" : SelectedFile.FileName + " ";
+                if (MessageBoxResult.No == MessageBox.Show(itemName + "を削除します。\nよろしいですか？",
+                    APP_NAME, MessageBoxButton.YesNo))
+                {
+                    return;
+                }
+                if (!DeleteSelectedFile())
+                {
+                    UpdateFileList(); //失敗したらファイルリスト更新
+                }
             }
         }
 
@@ -503,11 +516,11 @@ namespace QuickEvidence.ViewModels
                 FileItemViewModel nextFile = null;
                 if (arg.Delta > 0)
                 {
-                    nextFile = GetNextFile(-1);
+                    nextFile = GetNextFile(SelectedFile, -1);
                 }
                 else
                 {
-                    nextFile = GetNextFile(1);
+                    nextFile = GetNextFile(SelectedFile, 1);
                 }
                 if(nextFile != null)
                 {
@@ -682,7 +695,7 @@ namespace QuickEvidence.ViewModels
                 {
                     return;
                 }
-                FileItemViewModel nextFile = GetNextFile(-1);
+                FileItemViewModel nextFile = GetNextFile(SelectedFile, -1);
 
                 if (nextFile != null)
                 {
@@ -696,7 +709,7 @@ namespace QuickEvidence.ViewModels
                 {
                     return;
                 }
-                FileItemViewModel nextFile = GetNextFile(1);
+                FileItemViewModel nextFile = GetNextFile(SelectedFile, 1);
 
                 if (nextFile != null)
                 {
@@ -752,7 +765,7 @@ namespace QuickEvidence.ViewModels
         /// </summary>
         void UpdateFileList()
         {
-            var tmpSelectedFile = SelectedFile;
+            var tmpSelectedFiles = (from x in SelectedFiles select x.FullPath).ToList();
             FileItems.Clear();
 
             if (!Directory.Exists(FolderPath))
@@ -781,9 +794,16 @@ namespace QuickEvidence.ViewModels
             }
 
             //同じパスのファイルを再選択
-            if(tmpSelectedFile != null && FileItems != null)
+            if(tmpSelectedFiles != null && FileItems != null)
             {
-                SelectedFile = (from x in FileItems where x.FullPath == tmpSelectedFile.FullPath select x).FirstOrDefault();
+                foreach(var fullpath in tmpSelectedFiles)
+                {
+                    var fileItem = (from x in FileItems where x.FullPath == fullpath select x).FirstOrDefault();
+                    if(fileItem != null)
+                    {
+                        fileItem.IsSelected = true;
+                    }
+                }
             }
         }
 
@@ -820,22 +840,26 @@ ExactSpelling = true)]
         /// </summary>
         private bool DeleteSelectedFile()
         {
-            if (SelectedFile != null)
+            var deleteFiles = new List<FileItemViewModel>(SelectedFiles);
+            if (SelectedFiles != null)
             {
-                var fullPath = Path.Combine(SelectedFile.FolderFullPath, SelectedFile.FileName);
-                if (!File.Exists(fullPath))
+                foreach (var deleteFile in deleteFiles)
                 {
-                    return false;
-                }
-                try
-                {
-                    File.Delete(fullPath);
-                    FileItems.Remove(SelectedFile);
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                    return false;
+                    var fullPath = Path.Combine(deleteFile.FolderFullPath, deleteFile.FileName);
+                    if (!File.Exists(fullPath))
+                    {
+                        return false;
+                    }
+                    try
+                    {
+                        File.Delete(fullPath);
+                        FileItems.Remove(deleteFile);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                        return false;
+                    }
                 }
                 return true;
             }
@@ -847,21 +871,53 @@ ExactSpelling = true)]
         /// </summary>
         private bool UpFile()
         {
-            var prevItem = GetNextFile(-1);
-            if(prevItem == null)
+            //選択中のファイルを上から順に並べる
+            var fromFiles = (from x in SelectedFiles orderby FileItems.IndexOf(x) select x).ToList();
+
+            var movedFiles = new List<FileItemViewModel>();
+
+            // チェック
+            foreach (var moveFile in fromFiles)
             {
-                return true; //前後のファイルアイテムがないだけなのでエラーにしない
+                var destFile = GetNextFile(moveFile , - 1);
+                if (destFile == null)
+                {
+                    return true; //前後のファイルアイテムがないだけなのでエラーにしない
+                }
+
+                if (!File.Exists(destFile.FullPath) || !File.Exists(moveFile.FullPath))
+                {
+                    return false; //ファイルが存在しないのでエラーにする
+                }
+
+                if (!CanReplaceFile(destFile, moveFile))
+                {
+                    return false;
+                }
             }
 
-            if (!File.Exists(prevItem.FullPath) || !File.Exists(SelectedFile.FullPath))
+            // 移動
+            foreach (var moveFile in fromFiles)
             {
-                return false; //ファイルが存在しないのでエラーにする
+                var prevItem = GetNextFile(moveFile, -1);
+                if (prevItem == null)
+                {
+                    return true; //前後のファイルアイテムがないだけなのでエラーにしない
+                }
+
+                if (ReplaceFile(prevItem, moveFile))
+                {
+                    movedFiles.Add(prevItem);
+                }
             }
 
-            if (ReplaceFile(prevItem, SelectedFile))
+            // 移動後の選択
+            SelectedFile = null;
+            foreach(var item in movedFiles)
             {
-                SelectedFile = prevItem;
+                item.IsSelected = true;
             }
+
             return true; //移動にかかわらずファイルは存在するので成功にする
         }
 
@@ -870,21 +926,53 @@ ExactSpelling = true)]
         /// </summary>
         private bool DownFile()
         {
-            var nextItem = GetNextFile(1);
-            if (nextItem == null)
+            //選択中のファイルを下から順に並べる
+            var fromFiles = (from x in SelectedFiles orderby FileItems.IndexOf(x) descending select x).ToList();
+
+            var movedFiles = new List<FileItemViewModel>();
+
+            // チェック
+            foreach (var fromFile in fromFiles)
             {
-                return true;    //前後のファイルアイテムがないだけなのでエラーにしない
+                var destFile = GetNextFile(fromFile, 1);
+                if (destFile == null)
+                {
+                    return true;    //前後のファイルアイテムがないだけなのでエラーにしない
+                }
+
+                if (!File.Exists(fromFile.FullPath) || !File.Exists(destFile.FullPath))
+                {
+                    return false; //ファイルが存在しないのでエラーにする
+                }
+
+                if (!CanReplaceFile(fromFile, destFile))
+                {
+                    return false;
+                }
             }
 
-            if (!File.Exists(SelectedFile.FullPath) || !File.Exists(nextItem.FullPath))
+            // 移動
+            foreach (var moveFile in fromFiles)
             {
-                return false; //ファイルが存在しないのでエラーにする
+                var nextItem = GetNextFile(moveFile, 1);
+                if (nextItem == null)
+                {
+                    return true;    //前後のファイルアイテムがないだけなのでエラーにしない
+                }
+
+                if (ReplaceFile(moveFile, nextItem))
+                {
+                    movedFiles.Add(nextItem);
+                }
             }
 
-            if (ReplaceFile(SelectedFile, nextItem))
+            // 移動後の選択
+            SelectedFile = null;
+            foreach (var item in movedFiles)
             {
-                SelectedFile = nextItem;
+                item.IsSelected = true;
             }
+
             return true; //移動にかかわらずファイルは存在するので成功にする
         }
 
@@ -893,9 +981,9 @@ ExactSpelling = true)]
         /// </summary>
         /// <param name="offset">選択アイテムに対するオフセット</param>
         /// <returns></returns>
-        private FileItemViewModel GetNextFile(int offset)
+        private FileItemViewModel GetNextFile(FileItemViewModel baseFile, int offset)
         {
-            int index = FileItems.IndexOf(SelectedFile);
+            int index = FileItems.IndexOf(baseFile);
             if(index < 0)
             {
                 return null;
@@ -910,6 +998,30 @@ ExactSpelling = true)]
         }
 
         /// <summary>
+        /// ファイル名を入れ替え可能か確認する
+        /// フォルダと拡張子が同じことが条件。
+        /// </summary>
+        /// <param name="item1"></param>
+        /// <param name="item2"></param>
+        /// <returns>移動したらtrue</returns>
+        private bool CanReplaceFile(FileItemViewModel item1, FileItemViewModel item2)
+        {
+            var ext1 = Path.GetExtension(item1.FileName);
+            var ext2 = Path.GetExtension(item2.FileName);
+
+            if (item1.FolderFullPath != item2.FolderFullPath)
+            {
+                return false;
+            }
+            if (ext1 != ext2 || ext1 == null || ext2 == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// ファイル名を入れ替える。
         /// フォルダと拡張子が同じことが条件。
         /// </summary>
@@ -918,18 +1030,6 @@ ExactSpelling = true)]
         /// <returns>移動したらtrue</returns>
         private bool ReplaceFile(FileItemViewModel item1, FileItemViewModel item2)
         {
-            var ext1 = Path.GetExtension(item1.FileName);
-            var ext2 = Path.GetExtension(item2.FileName);
-
-            if(item1.FolderFullPath != item2.FolderFullPath)
-            {
-                return false;
-            }
-            if(ext1 != ext2 || ext1 == null || ext2 == null)
-            {
-                return false;
-            }
-
             try
             {
                 //ファイルを閉じる
@@ -970,7 +1070,7 @@ ExactSpelling = true)]
         /// </summary>
         private void LoadImage()
         {
-            if (SelectedFile == null)
+            if (SelectedFile == null || SelectedFiles.Count > 1)
             {
                 ImageSource = null;
                 ViewBoxWidth = null;
