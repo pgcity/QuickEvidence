@@ -89,7 +89,7 @@
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridHyperlinkColumn Width="30"
+                <DataGridHyperlinkColumn Width="30" IsReadOnly="True"
                                          Binding="{Binding Path=DataContext.OpenText, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}">
                     <DataGridHyperlinkColumn.ElementStyle>
                         <Style>
