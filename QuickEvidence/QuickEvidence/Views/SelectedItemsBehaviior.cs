@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using QuickEvidence.ViewModels;
+using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
@@ -32,24 +33,18 @@ namespace QuickEvidence.Views
         public static DependencyProperty SelectedItemsProperty =
             DependencyProperty.Register("SelectedItems", typeof(IList), typeof(SelectedItemsBehavior), new PropertyMetadata(null));
 
-        public IList SelectedItems
-        {
-            get { return (IList)GetValue(SelectedItemsProperty); }
-            set { SetValue(SelectedItemsProperty, value); }
-        }
-
         void grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //新規選択されたアイテムをリストに追加
             foreach (var addedItem in e.AddedItems)
             {
-                SelectedItems?.Add(addedItem);
+                (addedItem as FileItemViewModel).IsSelected = true;
             }
 
             //選択解除されたアイテムをリストから削除
             foreach (var removedItem in e.RemovedItems)
             {
-                SelectedItems?.Remove(removedItem);
+                (removedItem as FileItemViewModel).IsSelected = false;
             }
         }
     }

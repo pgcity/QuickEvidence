@@ -9,7 +9,7 @@ namespace QuickEvidence.Views
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class MainWindow : Window, IGetPosition, IColorDialog, ITextInputWindow
+    public partial class MainWindow : Window, IGetPosition, IColorDialog, ITextInputWindow, IScrollDataGrid
     {
         public MainWindow()
         {
@@ -19,6 +19,7 @@ namespace QuickEvidence.Views
             vm.GetPositionIF = this;
             vm.ColorDialogIF = this;
             vm.TextInputWindowIF = this;
+            vm.ScrollDataGridIF = this;
         }
 
         public Point GetPositionFromScrollViewer(MouseEventArgs arg)
@@ -34,6 +35,20 @@ namespace QuickEvidence.Views
         public Point GetPositionFromViewBox(MouseEventArgs arg)
         {
             return arg.GetPosition(mainViewBox);
+        }
+
+        /// <summary>
+        /// DataGridを指定アイテムへスクロールする
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool ScrollToItem(FileItemViewModel item)
+        {
+            if (item != null)
+            {
+                fileListDataGrid.ScrollIntoView(item);
+            }
+            return true;
         }
 
         /// <summary>
@@ -71,23 +86,6 @@ namespace QuickEvidence.Views
                 return vm.Text;
             }
             return null;
-        }
-
-        /// <summary>
-        /// ファイル一覧の選択変更
-        /// 変更先アイテムが見えるようスクロールする
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            var listView = (System.Windows.Controls.DataGrid)sender;
-
-            MainWindowViewModel vm = (MainWindowViewModel)DataContext;
-            if(vm.SelectedFile != null)
-            {
-                listView.ScrollIntoView(vm.SelectedFile);
-            }
         }
 
         /// <summary>

@@ -18,8 +18,10 @@ namespace QuickEvidence.ViewModels
 	public class MainWindowViewModel : BindableBase
 	{
         public IGetPosition GetPositionIF { get; internal set; }
-        public MainWindow ColorDialogIF { get; internal set; }
-        public MainWindow TextInputWindowIF { get; internal set; }
+        public IColorDialog ColorDialogIF { get; internal set; }
+        public ITextInputWindow TextInputWindowIF { get; internal set; }
+        public IScrollDataGrid ScrollDataGridIF { get; internal set; }
+
         const string APP_NAME = "QuickEvidence";
 
         public MainWindowViewModel()
@@ -100,11 +102,9 @@ namespace QuickEvidence.ViewModels
         /// <summary>
         /// 選択されたファイル（複数選択の取得用）
         /// </summary>
-        private IList<FileItemViewModel> _selectedFiles = new List<FileItemViewModel>();
         public IList<FileItemViewModel> SelectedFiles
         {
-            get { return _selectedFiles; }
-            set { SetProperty(ref _selectedFiles, value); }
+            get { return (from x in FileItems where x.IsSelected select x).ToList(); }
         }
 
         /// <summary>
@@ -541,6 +541,7 @@ namespace QuickEvidence.ViewModels
                 if(nextFile != null)
                 {
                     SelectedFile = nextFile;
+                    ScrollDataGridIF.ScrollToItem(SelectedFile);
                 }
             }
         }
@@ -716,6 +717,7 @@ namespace QuickEvidence.ViewModels
                 if (nextFile != null)
                 {
                     SelectedFile = nextFile;
+                    ScrollDataGridIF.ScrollToItem(SelectedFile);
                 }
             }
             if (arg.Key == Key.Down)
@@ -730,6 +732,7 @@ namespace QuickEvidence.ViewModels
                 if (nextFile != null)
                 {
                     SelectedFile = nextFile;
+                    ScrollDataGridIF.ScrollToItem(SelectedFile);
                 }
             }
             if (arg.Key == Key.Home)
@@ -742,6 +745,7 @@ namespace QuickEvidence.ViewModels
                 if (FileItems.Count > 0)
                 {
                     SelectedFile = FileItems[0];
+                    ScrollDataGridIF.ScrollToItem(SelectedFile);
                 }
             }
             if (arg.Key == Key.End)
@@ -754,6 +758,7 @@ namespace QuickEvidence.ViewModels
                 if (FileItems.Count > 0)
                 {
                     SelectedFile = FileItems[FileItems.Count - 1];
+                    ScrollDataGridIF.ScrollToItem(SelectedFile);
                 }
             }
         }
@@ -886,6 +891,7 @@ ExactSpelling = true)]
                 }
 
                 SelectedFile = nextItem;
+                ScrollDataGridIF.ScrollToItem(SelectedFile);
                 return true;
             }
             return false;
@@ -902,6 +908,10 @@ ExactSpelling = true)]
             var movedFiles = new List<FileItemViewModel>();
 
             // チェック
+            if(fromFiles.Count() == 0)
+            {
+                return true;
+            }
             foreach (var moveFile in fromFiles)
             {
                 var destFile = GetNextFile(moveFile , - 1);
@@ -937,11 +947,18 @@ ExactSpelling = true)]
             }
 
             // 移動後の選択
-            SelectedFile = null;
-            foreach(var item in movedFiles)
+            foreach (var item in FileItems)
             {
-                item.IsSelected = true;
+                item.IsSelected = movedFiles.Contains(item);
             }
+
+            // スクロール
+            var scrollItem = movedFiles.First();
+            if(scrollItem != null)
+            {
+                ScrollDataGridIF.ScrollToItem(scrollItem);
+            }
+
 
             return true; //移動にかかわらずファイルは存在するので成功にする
         }
@@ -957,6 +974,10 @@ ExactSpelling = true)]
             var movedFiles = new List<FileItemViewModel>();
 
             // チェック
+            if (fromFiles.Count() == 0)
+            {
+                return true;
+            }
             foreach (var fromFile in fromFiles)
             {
                 var destFile = GetNextFile(fromFile, 1);
@@ -992,10 +1013,16 @@ ExactSpelling = true)]
             }
 
             // 移動後の選択
-            SelectedFile = null;
-            foreach (var item in movedFiles)
+            foreach (var item in FileItems)
             {
-                item.IsSelected = true;
+                item.IsSelected = movedFiles.Contains(item);
+            }
+
+            // スクロール
+            var scrollItem = movedFiles.First();
+            if (scrollItem != null)
+            {
+                ScrollDataGridIF.ScrollToItem(scrollItem);
             }
 
             return true; //移動にかかわらずファイルは存在するので成功にする
