@@ -100,7 +100,7 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
-        /// 選択されたファイル（複数選択の取得用）
+        /// 選択されたファイル一覧
         /// </summary>
         public IList<FileItemViewModel> SelectedFiles
         {
@@ -744,7 +744,11 @@ namespace QuickEvidence.ViewModels
                 }
                 if (FileItems.Count > 0)
                 {
-                    SelectedFile = FileItems[0];
+                    foreach(var item in FileItems)
+                    {
+                        item.IsSelected = false;
+                    }
+                    FileItems[0].IsSelected = true;
                     ScrollDataGridIF.ScrollToItem(SelectedFile);
                 }
             }
@@ -757,7 +761,11 @@ namespace QuickEvidence.ViewModels
                 }
                 if (FileItems.Count > 0)
                 {
-                    SelectedFile = FileItems[FileItems.Count - 1];
+                    foreach (var item in FileItems)
+                    {
+                        item.IsSelected = false;
+                    }
+                    FileItems[FileItems.Count - 1].IsSelected = true;
                     ScrollDataGridIF.ScrollToItem(SelectedFile);
                 }
             }
@@ -810,7 +818,8 @@ namespace QuickEvidence.ViewModels
                 {
                     FileName = Path.GetFileName(item),
                     FolderPath = Path.GetDirectoryName(item).Replace(FolderPath, "."),
-                    FolderFullPath = Path.GetDirectoryName(item)
+                    FolderFullPath = Path.GetDirectoryName(item),
+                    IsSelected = false
                 });
             }
 

@@ -1,6 +1,4 @@
 ﻿using QuickEvidence.ViewModels;
-using System.Collections;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
 
@@ -30,21 +28,12 @@ namespace QuickEvidence.Views
             base.OnDetaching();
         }
 
-        public static DependencyProperty SelectedItemsProperty =
-            DependencyProperty.Register("SelectedItems", typeof(IList), typeof(SelectedItemsBehavior), new PropertyMetadata(null));
-
         void grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //新規選択されたアイテムをリストに追加
-            foreach (var addedItem in e.AddedItems)
+            var dataGrid = sender as DataGrid;
+            foreach (var item in dataGrid.Items)
             {
-                (addedItem as FileItemViewModel).IsSelected = true;
-            }
-
-            //選択解除されたアイテムをリストから削除
-            foreach (var removedItem in e.RemovedItems)
-            {
-                (removedItem as FileItemViewModel).IsSelected = false;
+                (item as FileItemViewModel).IsSelected = dataGrid.SelectedItems.Contains(item);
             }
         }
     }

@@ -70,14 +70,15 @@
         </Button>
 
         <!--ファイルリスト-->
+        <!--仮想化する場合は  
+            EnableRowVirtualization="True"
+            VirtualizingStackPanel.VirtualizationMode="Standard" -->
         <DataGrid Name="fileListDataGrid" Margin="0,30,0,30" SelectionMode="Extended"
                   ItemsSource="{Binding FileItems}"
                   SelectedItem="{Binding SelectedFile}"
                   AutoGenerateColumns="False" CanUserSortColumns="False" CanUserAddRows="False"
+                  EnableRowVirtualization="False"
                   IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
-            <i:Interaction.Behaviors>
-                <views:SelectedItemsBehavior />
-            </i:Interaction.Behaviors>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
