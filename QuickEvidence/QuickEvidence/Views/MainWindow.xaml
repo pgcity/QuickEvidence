@@ -78,7 +78,11 @@
                   SelectedItem="{Binding SelectedFile}"
                   AutoGenerateColumns="False" CanUserSortColumns="False" CanUserAddRows="False"
                   EnableRowVirtualization="False"
-                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}">
+                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                  views:IsEditingBehavior.IsEditing="{Binding IsFileNameEditing, Mode=TwoWay}">
+            <i:Interaction.Behaviors>
+                <views:IsEditingBehavior/>
+            </i:Interaction.Behaviors>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>

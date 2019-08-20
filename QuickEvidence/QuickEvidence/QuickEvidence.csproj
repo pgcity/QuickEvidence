@@ -91,6 +91,7 @@
     <Compile Include="ViewModels\IScrollDataGrid.cs" />
     <Compile Include="ViewModels\TextInputWindowViewModel.cs" />
     <Compile Include="Views\IClose.cs" />
+    <Compile Include="Views\IsEditingBehavior.cs" />
     <Compile Include="Views\SelectedItemsBehaviior.cs" />
     <Compile Include="Views\WindowTitleConverter.cs" />
     <Compile Include="Views\InverseBooleanConverter.cs" />

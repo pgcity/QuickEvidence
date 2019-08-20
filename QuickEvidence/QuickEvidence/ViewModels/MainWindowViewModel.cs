@@ -267,6 +267,16 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
+        /// 編集フラグ
+        /// </summary>
+        private bool _isFileNameEditing = false;
+        public bool IsFileNameEditing
+        {
+            get { return _isFileNameEditing; }
+            set { SetProperty(ref _isFileNameEditing, value); }
+        }
+
+        /// <summary>
         /// 「開く」テキスト
         /// </summary>
         private string _openText =">>";
@@ -403,7 +413,7 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteFileListPreviewKeyDownCommand(KeyEventArgs args)
         {
-            if(args.Key == Key.Delete)  // Deleteキー：ファイルの削除
+            if(args.Key == Key.Delete && !IsFileNameEditing)  // Deleteキー：ファイルの削除、ファイル名編集中は右一文字削除に使う
             {
                 ExecuteDeleteFileCommand();
                 args.Handled = true;
