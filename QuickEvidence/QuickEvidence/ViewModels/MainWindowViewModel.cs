@@ -39,6 +39,7 @@ namespace QuickEvidence.ViewModels
             }
 
             UpdateFileList();
+            UpdateWindowTitle();
         }
 
         ///////////////////////////////////////////////
@@ -78,6 +79,16 @@ namespace QuickEvidence.ViewModels
 
         ///////////////////////////////////////////////
         // バインディング用プロパティ
+
+        /// <summary>
+        /// ウィンドウタイトル
+        /// </summary>
+        private string _windowTitle = APP_NAME;
+        public string WindowTitle
+        {
+            get { return _windowTitle; }
+            set { SetProperty(ref _windowTitle, value); }
+        }
 
         /// <summary>
         /// ファイル一覧
@@ -473,6 +484,7 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteSearchItemSelectionChangedCommand()
         {
+            UpdateWindowTitle();
             LoadImage();
         }
 
@@ -798,6 +810,25 @@ namespace QuickEvidence.ViewModels
 
         ///////////////////////////////////////////////
         // ロジック
+
+        /// <summary>
+        /// ウィンドウタイトルの更新
+        /// </summary>
+        private void UpdateWindowTitle()
+        {
+            if (SelectedFiles.Count == 0)
+            {
+                WindowTitle = APP_NAME;
+            }
+            else if (SelectedFiles.Count == 1)
+            {
+                WindowTitle = SelectedFile.FileName + " - " + APP_NAME;
+            }
+            else
+            {
+                WindowTitle = SelectedFiles.Count + "個のファイルを選択 - " + APP_NAME;
+            }
+        }
 
         /// <summary>
         /// ファイル一覧の更新

@@ -10,18 +10,15 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:views="clr-namespace:QuickEvidence.Views"
         Height="626.726" Width="1093.844" ResizeMode="{Binding ResizeMode}"
-        WindowState="{Binding WindowState}" WindowStyle="{Binding WindowStyle}">
+        WindowState="{Binding WindowState}" WindowStyle="{Binding WindowStyle}"
+        Title="{Binding WindowTitle}">
     <Window.Resources>
         <ResourceDictionary>
             <views:ToggleConverter x:Key="toggleConverter"/>
             <views:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
             <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
-            <views:WindowTitleConverter x:Key="defaultStringConverter"/>
         </ResourceDictionary>
     </Window.Resources>
-    <Window.Title>
-        <Binding Path="SelectedFile" Converter="{StaticResource defaultStringConverter}" ConverterParameter="QuickEvidence"/>
-    </Window.Title>
     <Window.InputBindings>
         <KeyBinding Key="F11" Command="{Binding FullScreenCommand}"/>
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveCommand}"/>
