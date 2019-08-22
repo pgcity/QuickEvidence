@@ -24,6 +24,7 @@
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveCommand}"/>
         <KeyBinding Key="Esc" Command="{Binding CancelCommand}"/>
         <KeyBinding Key="F5" Command="{Binding UpdateCommand}"/>
+        <KeyBinding Key="F1" Command="{Binding HelpCommand}"/>
     </Window.InputBindings>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">

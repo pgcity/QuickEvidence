@@ -808,6 +808,21 @@ namespace QuickEvidence.ViewModels
             }
         }
 
+        /// <summary>
+        /// F1キー：readme.txt表示
+        /// </summary>
+        private DelegateCommand _helpCommand;
+        public DelegateCommand HelpCommand =>
+            _helpCommand ?? (_helpCommand = new DelegateCommand(ExecuteHelpCommand));
+
+        void ExecuteHelpCommand()
+        {
+            if (File.Exists("readme.txt"))
+            {
+                System.Diagnostics.Process.Start("readme.txt");
+            }
+        }
+
         ///////////////////////////////////////////////
         // ロジック
 
