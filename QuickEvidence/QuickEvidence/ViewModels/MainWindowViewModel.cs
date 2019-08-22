@@ -20,7 +20,24 @@ namespace QuickEvidence.ViewModels
         public IGetPosition GetPositionIF { get; internal set; }
         public IColorDialog ColorDialogIF { get; internal set; }
         public ITextInputWindow TextInputWindowIF { get; internal set; }
-        public IScrollDataGrid ScrollDataGridIF { get; internal set; }
+
+        /// <summary>
+        /// スクロールIF。セットされた時点で選択があればそこにスクロール
+        /// </summary>
+        private IScrollDataGrid _scrollDataGridIF;
+        public IScrollDataGrid ScrollDataGridIF {
+            get {
+                return _scrollDataGridIF;
+            }
+            internal set
+            {
+                _scrollDataGridIF = value;
+                if(_scrollDataGridIF != null && SelectedFiles.Count > 0)
+                {
+                    _scrollDataGridIF.ScrollToItem(SelectedFiles[0]);
+                }
+            }
+        }
 
         const string APP_NAME = "QuickEvidence";
 
@@ -40,6 +57,19 @@ namespace QuickEvidence.ViewModels
 
             UpdateFileList();
             UpdateWindowTitle();
+
+            //過去に選択していたファイルがあれば選択
+            if(Properties.Settings.Default.SelectedFiles != null)
+            {
+                foreach (var file in Properties.Settings.Default.SelectedFiles)
+                {
+                    var item = (from x in FileItems where x.FullPath == file select x).SingleOrDefault();
+                    if (item != null)
+                    {
+                        item.IsSelected = true;
+                    }
+                }
+            }
         }
 
         ///////////////////////////////////////////////
@@ -319,26 +349,29 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteWindowClosingCommand(CancelEventArgs arg)
         {
-            if (!IsModify)
+            if (IsModify)
             {
-                return;
-            }
-
-            switch (MessageBox.Show("変更を保存しますか？", "QuickEvidence", MessageBoxButton.YesNoCancel))
-            {
-                case MessageBoxResult.Yes:
-                    if (!SaveImage())
-                    {
+                switch (MessageBox.Show("変更を保存しますか？", "QuickEvidence", MessageBoxButton.YesNoCancel))
+                {
+                    case MessageBoxResult.Yes:
+                        if (!SaveImage())
+                        {
+                            arg.Cancel = true;
+                            return;
+                        }
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    case MessageBoxResult.Cancel:
                         arg.Cancel = true;
-                    }
-                    break;
-                case MessageBoxResult.No:
-                    break;
-                case MessageBoxResult.Cancel:
-                    arg.Cancel = true;
-                    break;
-
+                        return;
+                }
             }
+
+            //選択したファイル名を保存
+            Properties.Settings.Default.SelectedFiles = new System.Collections.Specialized.StringCollection();
+            Properties.Settings.Default.SelectedFiles.AddRange((from x in SelectedFiles select x.FullPath).ToArray());
+            Properties.Settings.Default.Save();
         }
 
         /// <summary>
