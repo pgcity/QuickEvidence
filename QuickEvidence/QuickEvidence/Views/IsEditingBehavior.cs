@@ -15,9 +15,11 @@ namespace QuickEvidence.Views
             if (grid != null)
             {
                 grid.BeginningEdit += Grid_BeginningEdit;
+                grid.PreparingCellForEdit += Grid_PreparingCellForEdit;
                 grid.CellEditEnding += Grid_CellEditEnding;
             }
         }
+
 
         protected override void OnDetaching()
         {
@@ -25,6 +27,7 @@ namespace QuickEvidence.Views
             if (grid != null)
             {
                 grid.BeginningEdit -= Grid_BeginningEdit;
+                grid.PreparingCellForEdit -= Grid_PreparingCellForEdit;
                 grid.CellEditEnding -= Grid_CellEditEnding;
             }
 
@@ -32,7 +35,7 @@ namespace QuickEvidence.Views
         }
         
         /// <summary>
-        /// 編集開始
+        /// 編集開始前
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -42,6 +45,23 @@ namespace QuickEvidence.Views
             SetIsEditing(grid, true);
         }
 
+        /// <summary>
+        /// 編集開始後
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Grid_PreparingCellForEdit(object sender, DataGridPreparingCellForEditEventArgs e)
+        {
+            var textBox = e.EditingElement as TextBox;
+            var vm = e.Row.DataContext as FileItemViewModel;
+            if (textBox != null && vm != null)
+            {
+                //拡張子を除く部分だけ選択する
+                var fileNameWOExt = System.IO.Path.GetFileNameWithoutExtension(vm.FullPath);
+                textBox.SelectionStart = 0;
+                textBox.SelectionLength = fileNameWOExt.Length;
+            }
+        }
         /// <summary>
         /// 編集終了
         /// </summary>
