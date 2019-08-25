@@ -99,5 +99,26 @@ namespace QuickEvidence.ViewModels
                 return Path.Combine(FolderFullPath, FileName);
             }
         }
+
+        // コマンド
+
+        /// <summary>
+        /// ファイルを開く
+        /// </summary>
+        private DelegateCommand _onOpenCommand;
+        public DelegateCommand OnOpenCommand =>
+            _onOpenCommand ?? (_onOpenCommand = new DelegateCommand(ExecuteOnOpenCommand));
+
+        void ExecuteOnOpenCommand()
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(FullPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }

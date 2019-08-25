@@ -41,6 +41,9 @@ namespace QuickEvidence.ViewModels
 
         const string APP_NAME = "QuickEvidence";
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public MainWindowViewModel()
         {
             SelectedToolBarButton = Properties.Settings.Default.SelectedToolBarButton;
@@ -69,6 +72,7 @@ namespace QuickEvidence.ViewModels
                         item.IsSelected = true;
                     }
                 }
+                ExecuteFileItemSelectionChangedCommand();
             }
         }
 
@@ -128,16 +132,6 @@ namespace QuickEvidence.ViewModels
         {
             get { return _fileItems; }
             set { SetProperty(ref _fileItems, value); }
-        }
-
-        /// <summary>
-        /// 選択されたファイル（単一選択の取得・設定用）
-        /// </summary>
-        private FileItemViewModel _selectedFile;
-        public FileItemViewModel SelectedFile
-        {
-            get { return _selectedFile; }
-            set { SetProperty(ref _selectedFile, value); }
         }
 
         /// <summary>
@@ -433,9 +427,9 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteDeleteFileCommand()
         {
-            if (SelectedFiles != null)
+            if (SelectedFiles != null && SelectedFiles.Count > 0)
             {
-                var itemName = SelectedFiles.Count > 1 ? "選択された " + SelectedFiles.Count + " 個の項目" : SelectedFile.FileName + " ";
+                var itemName = SelectedFiles.Count > 1 ? "選択された " + SelectedFiles.Count + " 個の項目" : SelectedFiles[0].FileName + " ";
                 if (MessageBoxResult.No == MessageBox.Show(itemName + "を削除します。\nよろしいですか？",
                     APP_NAME, MessageBoxButton.YesNo))
                 {
@@ -513,9 +507,9 @@ namespace QuickEvidence.ViewModels
         /// </summary>
         private DelegateCommand _fileSelectionChangedCommand;
         public DelegateCommand FileSelectionChangedCommand =>
-            _fileSelectionChangedCommand ?? (_fileSelectionChangedCommand = new DelegateCommand(ExecuteSearchItemSelectionChangedCommand));
+            _fileSelectionChangedCommand ?? (_fileSelectionChangedCommand = new DelegateCommand(ExecuteFileItemSelectionChangedCommand));
 
-        void ExecuteSearchItemSelectionChangedCommand()
+        void ExecuteFileItemSelectionChangedCommand()
         {
             UpdateWindowTitle();
             LoadImage();
@@ -580,23 +574,13 @@ namespace QuickEvidence.ViewModels
             {
                 arg.Handled = true;
                 // ファイル前後移動
-                if (IsModify)
-                {
-                    return;
-                }
-                FileItemViewModel nextFile = null;
                 if (arg.Delta > 0)
                 {
-                    nextFile = GetNextFile(SelectedFile, -1);
+                    MoveToNextFile(-1);
                 }
                 else
                 {
-                    nextFile = GetNextFile(SelectedFile, 1);
-                }
-                if(nextFile != null)
-                {
-                    SelectedFile = nextFile;
-                    ScrollDataGridIF.ScrollToItem(SelectedFile);
+                    MoveToNextFile(1);
                 }
             }
         }
@@ -763,32 +747,12 @@ namespace QuickEvidence.ViewModels
             if(arg.Key == Key.Up)
             {
                 arg.Handled = true;
-                if (IsModify)
-                {
-                    return;
-                }
-                FileItemViewModel nextFile = GetNextFile(SelectedFile, -1);
-
-                if (nextFile != null)
-                {
-                    SelectedFile = nextFile;
-                    ScrollDataGridIF.ScrollToItem(SelectedFile);
-                }
+                MoveToNextFile(-1);
             }
             if (arg.Key == Key.Down)
             {
                 arg.Handled = true;
-                if (IsModify)
-                {
-                    return;
-                }
-                FileItemViewModel nextFile = GetNextFile(SelectedFile, 1);
-
-                if (nextFile != null)
-                {
-                    SelectedFile = nextFile;
-                    ScrollDataGridIF.ScrollToItem(SelectedFile);
-                }
+                MoveToNextFile(1);
             }
             if (arg.Key == Key.Home)
             {
@@ -799,12 +763,8 @@ namespace QuickEvidence.ViewModels
                 }
                 if (FileItems.Count > 0)
                 {
-                    foreach(var item in FileItems)
-                    {
-                        item.IsSelected = false;
-                    }
-                    FileItems[0].IsSelected = true;
-                    ScrollDataGridIF.ScrollToItem(SelectedFile);
+                    SelectSingleItem(FileItems[0]);
+                    ScrollDataGridIF.ScrollToItem(FileItems[0]);
                 }
             }
             if (arg.Key == Key.End)
@@ -816,12 +776,8 @@ namespace QuickEvidence.ViewModels
                 }
                 if (FileItems.Count > 0)
                 {
-                    foreach (var item in FileItems)
-                    {
-                        item.IsSelected = false;
-                    }
-                    FileItems[FileItems.Count - 1].IsSelected = true;
-                    ScrollDataGridIF.ScrollToItem(SelectedFile);
+                    SelectSingleItem(FileItems[FileItems.Count - 1]);
+                    ScrollDataGridIF.ScrollToItem(FileItems[FileItems.Count - 1]);
                 }
             }
         }
@@ -870,7 +826,7 @@ namespace QuickEvidence.ViewModels
             }
             else if (SelectedFiles.Count == 1)
             {
-                WindowTitle = SelectedFile.FileName + " - " + APP_NAME;
+                WindowTitle = SelectedFiles[0].FileName + " - " + APP_NAME;
             }
             else
             {
@@ -955,6 +911,42 @@ ExactSpelling = true)]
         }
 
         /// <summary>
+        /// 単一アイテムを選択する
+        /// </summary>
+        /// <param name="item"></param>
+        private void SelectSingleItem(FileItemViewModel item)
+        {
+            foreach(var selectedItem in SelectedFiles)
+            {
+                selectedItem.IsSelected = false;
+            }
+            item.IsSelected = true;
+        }
+
+        /// <summary>
+        /// 前後のファイルに選択を移動する
+        /// </summary>
+        /// <param name="offset">移動する要素数（マイナスで前に移動）</param>
+        private void MoveToNextFile(int offset)
+        {
+            if (offset == 0)
+            {
+                return;
+            }
+            if (IsModify)
+            {
+                return;
+            }
+            var baseFile = (offset > 0) ? SelectedFiles.LastOrDefault() : SelectedFiles.FirstOrDefault();
+            var nextFile = GetNextFile(baseFile, offset);
+            if (nextFile != null)
+            {
+                SelectSingleItem(nextFile);
+                ScrollDataGridIF.ScrollToItem(nextFile);
+            }
+        }
+
+        /// <summary>
         /// 選択されたファイルの削除
         /// </summary>
         private bool DeleteSelectedFile()
@@ -988,8 +980,8 @@ ExactSpelling = true)]
                     }
                 }
 
-                SelectedFile = nextItem;
-                ScrollDataGridIF.ScrollToItem(SelectedFile);
+                SelectSingleItem(nextItem);
+                ScrollDataGridIF.ScrollToItem(nextItem);
                 return true;
             }
             return false;
@@ -1220,7 +1212,7 @@ ExactSpelling = true)]
         /// </summary>
         private void LoadImage()
         {
-            if (SelectedFile == null || SelectedFiles.Count > 1)
+            if (SelectedFiles.Count == 0 || SelectedFiles.Count > 1)
             {
                 ImageSource = null;
                 ViewBoxWidth = null;
@@ -1229,14 +1221,14 @@ ExactSpelling = true)]
             }
 
             // 拡張子チェック
-            var ext = Path.GetExtension(SelectedFile.FileName).ToLower();
-            var exist = File.Exists(SelectedFile.FullPath);
+            var ext = Path.GetExtension(SelectedFiles[0].FileName).ToLower();
+            var exist = File.Exists(SelectedFiles[0].FullPath);
             if (exist && (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp"))
             {
                 // ビットマップの読み込み
                 BitmapImage tmpBitmap = new BitmapImage();
 
-                FileStream stream = File.OpenRead(SelectedFile.FullPath);
+                FileStream stream = File.OpenRead(SelectedFiles[0].FullPath);
                 tmpBitmap.BeginInit();
                 tmpBitmap.CacheOption = BitmapCacheOption.OnLoad;
                 tmpBitmap.StreamSource = stream;
@@ -1273,11 +1265,15 @@ ExactSpelling = true)]
         {
             try
             {
-                using (var os = new FileStream(SelectedFile.FullPath, FileMode.OpenOrCreate))
+                if(SelectedFiles.Count != 1)
+                {
+                    return false;
+                }
+                using (var os = new FileStream(SelectedFiles[0].FullPath, FileMode.OpenOrCreate))
                 {
                     // 変換したBitmapをエンコードしてFileStreamに保存する。
                     // BitmapEncoder が指定されなかった場合は、PNG形式とする。
-                    var ext = Path.GetExtension(SelectedFile.FileName).ToLower();
+                    var ext = Path.GetExtension(SelectedFiles[0].FileName).ToLower();
                     BitmapEncoder encoder = null;
                     switch (ext)
                     {
