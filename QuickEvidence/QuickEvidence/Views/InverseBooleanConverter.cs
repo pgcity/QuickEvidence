@@ -17,6 +17,10 @@ namespace QuickEvidence.Views
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if ((bool)value)
+            {
+                return false;
+            }
             return true;
         }
     }

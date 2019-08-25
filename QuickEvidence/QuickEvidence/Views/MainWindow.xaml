@@ -73,10 +73,9 @@
             VirtualizingStackPanel.VirtualizationMode="Standard" -->
         <DataGrid Name="fileListDataGrid" Margin="0,30,0,30" SelectionMode="Extended"
                   ItemsSource="{Binding FileItems}"
-                  SelectedItem="{Binding SelectedFile}"
                   AutoGenerateColumns="False" CanUserSortColumns="False" CanUserAddRows="False"
                   EnableRowVirtualization="False"
-                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                  IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}, Mode=TwoWay}"
                   views:IsEditingBehavior.IsEditing="{Binding IsFileNameEditing, Mode=TwoWay}">
             <i:Interaction.Behaviors>
                 <views:IsEditingBehavior/>
@@ -95,14 +94,23 @@
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridHyperlinkColumn Width="30" IsReadOnly="True"
-                                         Binding="{Binding Path=DataContext.OpenText, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}">
-                    <DataGridHyperlinkColumn.ElementStyle>
-                        <Style>
-                            <EventSetter Event="Hyperlink.Click" Handler="OpenHyperlink_Clicked"/>
+                <DataGridTemplateColumn Width="32" IsReadOnly="True">
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MetroDataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
                         </Style>
-                    </DataGridHyperlinkColumn.ElementStyle>
-                </DataGridHyperlinkColumn>
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.Header>
+                        <iconPacks:PackIconMaterial Kind="OpenInNew" Width="10" Height="10" Foreground="Gray"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Width="24" Height="24" Command="{Binding OnOpenCommand}" Background="Transparent" BorderBrush="Transparent">
+                                <iconPacks:PackIconMaterial Kind="OpenInNew" Width="11" Height="11" Foreground="Gray" ToolTip="ファイルを開く"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Width="200" Binding="{Binding FileName}" Header="ファイル"/>
                 <DataGridTextColumn Width="200" Binding="{Binding FolderPath}" Header="フォルダー" IsReadOnly="True"/>
             </DataGrid.Columns>

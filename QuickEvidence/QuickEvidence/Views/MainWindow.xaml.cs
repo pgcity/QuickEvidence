@@ -87,26 +87,5 @@ namespace QuickEvidence.Views
             }
             return null;
         }
-
-        /// <summary>
-        /// ファイルダブルクリック
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OpenHyperlink_Clicked(object sender, RoutedEventArgs e)
-        {
-            MainWindowViewModel vm = (MainWindowViewModel)DataContext;
-            if (vm.SelectedFile != null)
-            {
-                try
-                {
-                    System.Diagnostics.Process.Start(vm.SelectedFile.FullPath);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-        }
     }
 }
