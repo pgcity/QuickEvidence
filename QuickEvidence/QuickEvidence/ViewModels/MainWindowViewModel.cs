@@ -468,62 +468,6 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
-        /// 複数のファイル名を変更
-        /// </summary>
-        private void EditMultipleFileName()
-        {
-            var result = NavigationIF.RenameMultipleFiles(EditMultipleFileNameCheck);
-            if (result.Result)
-            {
-                var currentNo = result.StartNo;
-                foreach(var file in SelectedFiles)
-                {
-                    var ext = Path.GetExtension(file.FullPath);
-                    file.ChangeFileName(MakeFileName(result.FileName, currentNo, ext));
-                    currentNo++;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 複数のファイル名を変更するためのチェック
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <param name="startNo"></param>
-        /// <returns></returns>
-        private bool EditMultipleFileNameCheck(string fileName, int startNo, out string resultMessage)
-        {
-            int currentNo = startNo;
-            foreach(var file in SelectedFiles)
-            {
-                var ext = Path.GetExtension(file.FullPath);
-                var newPath = Path.Combine(file.FolderFullPath, MakeFileName(fileName, currentNo, ext));
-
-                if (File.Exists(newPath))
-                {
-                    resultMessage = "重複するファイル名があるため、ファイル名を変更できません。\n\n" + newPath;
-                    return false;
-                }
-                currentNo++;
-            }
-
-            resultMessage = "";
-            return true;
-        }
-
-        /// <summary>
-        /// 連番ファイル名の作成
-        /// </summary>
-        /// <param name="baseName"></param>
-        /// <param name="no"></param>
-        /// <param name="ext"></param>
-        /// <returns></returns>
-        private string MakeFileName(string baseName, int no, string ext)
-        {
-            return baseName + " (" + no + ")" + ext;
-        }
-
-        /// <summary>
         /// ファイルを上に移動
         /// </summary>
         private DelegateCommand _onUpFileCommand;
@@ -1050,6 +994,62 @@ ExactSpelling = true)]
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// 複数のファイル名を変更
+        /// </summary>
+        private void EditMultipleFileName()
+        {
+            var result = NavigationIF.RenameMultipleFiles(EditMultipleFileNameCheck);
+            if (result.Result)
+            {
+                var currentNo = result.StartNo;
+                foreach (var file in SelectedFiles)
+                {
+                    var ext = Path.GetExtension(file.FullPath);
+                    file.ChangeFileName(MakeFileName(result.FileName, currentNo, ext));
+                    currentNo++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 複数のファイル名を変更するためのチェック
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="startNo"></param>
+        /// <returns></returns>
+        private bool EditMultipleFileNameCheck(string fileName, int startNo, out string resultMessage)
+        {
+            int currentNo = startNo;
+            foreach (var file in SelectedFiles)
+            {
+                var ext = Path.GetExtension(file.FullPath);
+                var newPath = Path.Combine(file.FolderFullPath, MakeFileName(fileName, currentNo, ext));
+
+                if (File.Exists(newPath))
+                {
+                    resultMessage = "重複するファイル名があるため、ファイル名を変更できません。\n\n" + newPath;
+                    return false;
+                }
+                currentNo++;
+            }
+
+            resultMessage = "";
+            return true;
+        }
+
+        /// <summary>
+        /// 連番ファイル名の作成
+        /// </summary>
+        /// <param name="baseName"></param>
+        /// <param name="no"></param>
+        /// <param name="ext"></param>
+        /// <returns></returns>
+        private string MakeFileName(string baseName, int no, string ext)
+        {
+            return baseName + " (" + no + ")" + ext;
         }
 
         /// <summary>
