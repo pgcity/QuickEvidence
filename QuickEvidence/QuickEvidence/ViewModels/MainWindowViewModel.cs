@@ -1,7 +1,6 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using Prism.Commands;
 using Prism.Mvvm;
-using QuickEvidence.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -38,6 +37,8 @@ namespace QuickEvidence.ViewModels
                 }
             }
         }
+
+        public INavigation NavigationIF { get; internal set; }
 
         const string APP_NAME = "QuickEvidence";
 
@@ -451,11 +452,75 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteFileListPreviewKeyDownCommand(KeyEventArgs args)
         {
+            if(args.Key == Key.F2 && !IsFileNameEditing)
+            {
+                if (SelectedFiles.Count > 1)  //複数選択：連番設定
+                {
+                    EditMultipleFileName();
+                    args.Handled = true;
+                }
+            }
             if(args.Key == Key.Delete && !IsFileNameEditing)  // Deleteキー：ファイルの削除、ファイル名編集中は右一文字削除に使う
             {
                 ExecuteDeleteFileCommand();
                 args.Handled = true;
             }
+        }
+
+        /// <summary>
+        /// 複数のファイル名を変更
+        /// </summary>
+        private void EditMultipleFileName()
+        {
+            var result = NavigationIF.RenameMultipleFiles(EditMultipleFileNameCheck);
+            if (result.Result)
+            {
+                var currentNo = result.StartNo;
+                foreach(var file in SelectedFiles)
+                {
+                    var ext = Path.GetExtension(file.FullPath);
+                    file.ChangeFileName(MakeFileName(result.FileName, currentNo, ext));
+                    currentNo++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 複数のファイル名を変更するためのチェック
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="startNo"></param>
+        /// <returns></returns>
+        private bool EditMultipleFileNameCheck(string fileName, int startNo, out string resultMessage)
+        {
+            int currentNo = startNo;
+            foreach(var file in SelectedFiles)
+            {
+                var ext = Path.GetExtension(file.FullPath);
+                var newPath = Path.Combine(file.FolderFullPath, MakeFileName(fileName, currentNo, ext));
+
+                if (File.Exists(newPath))
+                {
+                    resultMessage = "重複するファイル名があるため、ファイル名を変更できません。\n\n" + newPath;
+                    return false;
+                }
+                currentNo++;
+            }
+
+            resultMessage = "";
+            return true;
+        }
+
+        /// <summary>
+        /// 連番ファイル名の作成
+        /// </summary>
+        /// <param name="baseName"></param>
+        /// <param name="no"></param>
+        /// <param name="ext"></param>
+        /// <returns></returns>
+        private string MakeFileName(string baseName, int no, string ext)
+        {
+            return baseName + " (" + no + ")" + ext;
         }
 
         /// <summary>

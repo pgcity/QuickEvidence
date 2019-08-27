@@ -33,32 +33,49 @@ namespace QuickEvidence.ViewModels
         {
             get { return _fileName; }
             set {
-                var oldFullPath = FullPath;
                 if (_fileName != null)
                 {
-                    if (File.Exists(oldFullPath))
-                    {
-                        //旧パスがある場合は変更を試みる。失敗なら変更しない。
-                        var newFullPath = Path.Combine(FolderFullPath, value);
-                        try
-                        {
-                            File.Move(oldFullPath, newFullPath);
-                        }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show(e.Message);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("ファイル名の変更でエラーが発生しました。\n選択されたファイルが見つかりません。");
-                        return;
-                    }
+                    ChangeFileName(value);
                 }
-                SetProperty(ref _fileName, value);
-
+                else
+                {
+                    SetProperty(ref _fileName, value);
+                }
             }
+        }
+
+        /// <summary>
+        /// ファイル名を変更
+        /// </summary>
+        /// <param name="newName">新しいファイル名</param>
+        /// <returns></returns>
+        public bool ChangeFileName(string newName)
+        {
+            var oldFullPath = FullPath;
+
+            if (File.Exists(oldFullPath))
+            {
+                //旧パスがある場合は変更を試みる。失敗なら変更しない。
+                var newFullPath = Path.Combine(FolderFullPath, newName);
+                try
+                {
+                    File.Move(oldFullPath, newFullPath);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                    return false;
+                }
+            }
+            else
+            {
+                MessageBox.Show("ファイル名の変更でエラーが発生しました。\n選択されたファイルが見つかりません。");
+                return false;
+            }
+
+            SetProperty(ref _fileName, newName);
+            this.RaisePropertyChanged("FileName");
+            return true;
         }
 
         /// <summary>

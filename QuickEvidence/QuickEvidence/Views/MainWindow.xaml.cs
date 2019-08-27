@@ -9,7 +9,7 @@ namespace QuickEvidence.Views
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class MainWindow : Window, IGetPosition, IColorDialog, ITextInputWindow, IScrollDataGrid
+    public partial class MainWindow : Window, IGetPosition, IColorDialog, ITextInputWindow, IScrollDataGrid, INavigation
     {
         public MainWindow()
         {
@@ -20,6 +20,7 @@ namespace QuickEvidence.Views
             vm.ColorDialogIF = this;
             vm.TextInputWindowIF = this;
             vm.ScrollDataGridIF = this;
+            vm.NavigationIF = this;
         }
 
         public Point GetPositionFromScrollViewer(MouseEventArgs arg)
@@ -35,6 +36,22 @@ namespace QuickEvidence.Views
         public Point GetPositionFromViewBox(MouseEventArgs arg)
         {
             return arg.GetPosition(mainViewBox);
+        }
+
+        /// <summary>
+        /// 複数ファイルの名前変更
+        /// </summary>
+        public FileRenameWindowViewModel RenameMultipleFiles(FileNameCheckFunc checkFunc)
+        {
+            var window = new FileRenameWindow()
+            {
+                Owner = this,
+                CheckFunc = checkFunc
+            };
+            window.ShowDialog();
+
+            var vm = window.DataContext as FileRenameWindowViewModel;
+            return vm;
         }
 
         /// <summary>

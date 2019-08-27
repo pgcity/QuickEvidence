@@ -88,19 +88,28 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModels\FileRenameWindowViewModel.cs" />
     <Compile Include="ViewModels\IScrollDataGrid.cs" />
     <Compile Include="ViewModels\TextInputWindowViewModel.cs" />
-    <Compile Include="Views\IClose.cs" />
+    <Compile Include="Views\FileRenameWindow.xaml.cs">
+      <DependentUpon>FileRenameWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\IClose.cs" />
+    <Compile Include="ViewModels\INavigation.cs" />
     <Compile Include="Views\IsEditingBehavior.cs" />
     <Compile Include="Views\SelectedItemsBehaviior.cs" />
     <Compile Include="Views\InverseBooleanConverter.cs" />
     <Compile Include="ViewModels\IColorDialog.cs" />
     <Compile Include="ViewModels\IGetPosition.cs" />
-    <Compile Include="Views\ITextInputWindow.cs" />
+    <Compile Include="ViewModels\ITextInputWindow.cs" />
     <Compile Include="Views\TextInputWindow.xaml.cs">
       <DependentUpon>TextInputWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ToggleConverter.cs" />
+    <Page Include="Views\FileRenameWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

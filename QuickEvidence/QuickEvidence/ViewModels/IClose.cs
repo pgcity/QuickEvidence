@@ -1,4 +1,4 @@
-﻿namespace QuickEvidence.Views
+﻿namespace QuickEvidence.ViewModels
 {
     public interface IClose
     {
