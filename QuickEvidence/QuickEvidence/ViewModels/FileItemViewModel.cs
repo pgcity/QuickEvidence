@@ -69,7 +69,7 @@ namespace QuickEvidence.ViewModels
             }
             else
             {
-                MessageBox.Show("ファイル名の変更でエラーが発生しました。\n選択されたファイルが見つかりません。");
+                MessageBox.Show("ファイル名の変更でエラーが発生しました。\n選択されたファイルが見つかりません。\n" + FileName);
                 return false;
             }
 

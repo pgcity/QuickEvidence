@@ -1008,7 +1008,10 @@ ExactSpelling = true)]
                 foreach (var file in SelectedFiles)
                 {
                     var ext = Path.GetExtension(file.FullPath);
-                    file.ChangeFileName(MakeFileName(result.FileName, currentNo, ext));
+                    if (!file.ChangeFileName(MakeFileName(result.FileName, currentNo, ext)))
+                    {
+                        return;
+                    }
                     currentNo++;
                 }
             }
