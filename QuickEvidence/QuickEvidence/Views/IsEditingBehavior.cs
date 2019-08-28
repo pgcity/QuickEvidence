@@ -90,7 +90,14 @@ namespace QuickEvidence.Views
 
         // Using a DependencyProperty as the backing store for IsEditing.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsEditingProperty =
-            DependencyProperty.RegisterAttached("IsEditing", typeof(bool), typeof(IsEditingBehavior), new PropertyMetadata());
+            DependencyProperty.RegisterAttached("IsEditing", typeof(bool), typeof(IsEditingBehavior), new PropertyMetadata(false, (sender, arg)=>
+            {
+                var dataGrid = sender as DataGrid;
+                if(dataGrid != null && (bool)arg.NewValue)
+                {
+                    dataGrid.BeginEdit();
+                }
+            }));
 
 
 

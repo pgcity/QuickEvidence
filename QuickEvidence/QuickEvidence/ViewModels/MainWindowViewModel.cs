@@ -449,6 +449,25 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
+        /// 名前の変更
+        /// </summary>
+        private DelegateCommand _renameCommand;
+        public DelegateCommand RenameCommand =>
+            _renameCommand ?? (_renameCommand = new DelegateCommand(ExecuteRenameCommand));
+
+        void ExecuteRenameCommand()
+        {
+            if (SelectedFiles.Count > 1)  //複数選択：連番設定
+            {
+                EditMultipleFileName();
+            }
+            else
+            {
+                IsFileNameEditing = true;
+            }
+        }
+
+        /// <summary>
         /// ファイルリストでのキー押下
         /// </summary>
         private DelegateCommand<KeyEventArgs> _fileListPreviewKeyDownCommand;
@@ -459,11 +478,8 @@ namespace QuickEvidence.ViewModels
         {
             if(args.Key == Key.F2 && !IsFileNameEditing)
             {
-                if (SelectedFiles.Count > 1)  //複数選択：連番設定
-                {
-                    EditMultipleFileName();
-                    args.Handled = true;
-                }
+                ExecuteRenameCommand();
+                args.Handled = true;
             }
             if(args.Key == Key.Delete && !IsFileNameEditing)  // Deleteキー：ファイルの削除、ファイル名編集中は右一文字削除に使う
             {

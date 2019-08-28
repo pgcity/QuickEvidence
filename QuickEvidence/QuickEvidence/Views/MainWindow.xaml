@@ -76,7 +76,7 @@
         <!--仮想化する場合は  
             EnableRowVirtualization="True"
             VirtualizingStackPanel.VirtualizationMode="Standard" -->
-        <DataGrid Name="fileListDataGrid" Margin="0,30,0,30" SelectionMode="Extended"
+        <DataGrid x:Name="fileListDataGrid" Margin="0,30,0,30" SelectionMode="Extended"
                   ItemsSource="{Binding FileItems}"
                   AutoGenerateColumns="False" CanUserSortColumns="False" CanUserAddRows="False"
                   EnableRowVirtualization="False"
@@ -96,6 +96,37 @@
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
                     <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
+                    <Setter Property="Tag" 
+                            Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},
+                            Path=DataContext}"/>
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                <MenuItem Header="最新の情報に更新" InputGestureText="F5" Command="{Binding UpdateCommand}">
+                                    <MenuItem.Icon>
+                                        <iconPacks:PackIconMaterial Kind="Refresh" Foreground="DarkGreen" Margin="3 0 0 0" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator/>
+                                <MenuItem Header="削除" InputGestureText="Del" Command="{Binding DeleteFileCommand}">
+                                    <MenuItem.Icon>
+                                        <iconPacks:PackIconMaterial Kind="Delete" Foreground="Gray" Margin="3 0 0 0" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="名前の変更" InputGestureText="F2" Command="{Binding RenameCommand}"/>
+                                <MenuItem Header="上のファイルと内容を交換" Command="{Binding OnUpFileCommand}">
+                                    <MenuItem.Icon>
+                                        <iconPacks:PackIconMaterial Kind="ArrowUp" Foreground="Gray" Margin="3 0 0 0" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="下のファイルと内容を交換" Command="{Binding OnDownFileCommand}">
+                                    <MenuItem.Icon>
+                                        <iconPacks:PackIconMaterial Kind="ArrowDown" Foreground="Gray" Margin="3 0 0 0" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
