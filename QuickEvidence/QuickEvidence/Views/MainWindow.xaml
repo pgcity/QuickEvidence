@@ -25,6 +25,8 @@
         <KeyBinding Key="Esc" Command="{Binding CancelCommand}"/>
         <KeyBinding Key="F5" Command="{Binding UpdateCommand}"/>
         <KeyBinding Key="F1" Command="{Binding HelpCommand}"/>
+        <KeyBinding Key="F2" Command="{Binding RenameCommand}"/>
+        <KeyBinding Key="Delete" Command="{Binding DeleteFileCommand}"/>
     </Window.InputBindings>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
