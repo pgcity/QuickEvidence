@@ -8,6 +8,6 @@ namespace QuickEvidence.ViewModels
 {
     public interface ITextInputWindow
     {
-        string ShowTextInputWindow();
+        TextInputWindowViewModel ShowTextInputWindow();
     }
 }

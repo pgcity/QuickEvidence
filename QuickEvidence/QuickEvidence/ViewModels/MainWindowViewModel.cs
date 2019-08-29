@@ -679,10 +679,10 @@ namespace QuickEvidence.ViewModels
                 DragStartPosViewBox = GetPositionIF.GetPositionFromViewBox(arg);
                 DragStartPosScrollViewer = GetPositionIF.GetPositionFromScrollViewer(arg);
 
-                var text = TextInputWindowIF.ShowTextInputWindow();
-                if(text != null)
+                var vm = TextInputWindowIF.ShowTextInputWindow();
+                if(vm != null)
                 {
-                    DrawText(text);
+                    DrawText(vm);
                 }
             }
         }
@@ -1426,7 +1426,7 @@ ExactSpelling = true)]
         /// テキストを描画
         /// </summary>
         /// <param name="text"></param>
-        private void DrawText(string text)
+        private void DrawText(TextInputWindowViewModel vm)
         {
             DrawingVisual drawingVisual = new DrawingVisual();
             DrawingContext drawingContext = drawingVisual.RenderOpen();
@@ -1436,11 +1436,11 @@ ExactSpelling = true)]
 
             drawingContext.DrawText(
                 new FormattedText(
-                    text, 
+                    vm.Text, 
                     System.Globalization.CultureInfo.CurrentCulture, 
                     FlowDirection.LeftToRight,
-                    new Typeface("メイリオ"),
-                    14,
+                    new Typeface(vm.FontFamily.Source),
+                    vm.FontSize,
                     new SolidColorBrush(SelectedColor)),
                 textPos);
             drawingContext.Close();

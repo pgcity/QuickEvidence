@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="ViewModels\IClose.cs" />
     <Compile Include="ViewModels\INavigation.cs" />
+    <Compile Include="Views\FontFamilyToNameConverter.cs" />
     <Compile Include="Views\IsEditingBehavior.cs" />
     <Compile Include="Views\SelectedItemsBehaviior.cs" />
     <Compile Include="Views\InverseBooleanConverter.cs" />

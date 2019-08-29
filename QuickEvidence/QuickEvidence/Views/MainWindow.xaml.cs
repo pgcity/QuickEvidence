@@ -92,15 +92,15 @@ namespace QuickEvidence.Views
         /// テキスト入力ウィンドウを表示する
         /// </summary>
         /// <returns></returns>
-        public string ShowTextInputWindow()
+        public TextInputWindowViewModel ShowTextInputWindow()
         {
             TextInputWindow window = new TextInputWindow();
             window.ShowDialog();
             TextInputWindowViewModel vm = (TextInputWindowViewModel)window.DataContext;
 
-            if (vm.IsOK)
+            if (vm.IsOK && vm.Text != null)
             {
-                return vm.Text;
+                return vm;
             }
             return null;
         }
