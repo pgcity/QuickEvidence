@@ -386,7 +386,7 @@ namespace QuickEvidence.ViewModels
             {
                 FolderPath = dlg.FileName;
                 Properties.Settings.Default.FolderPath = FolderPath;
-                Properties.Settings.Default.SelectedFiles.Clear();
+                Properties.Settings.Default.SelectedFiles?.Clear();
                 Properties.Settings.Default.Save();
 
                 foreach (var selectedItem in SelectedFiles)
