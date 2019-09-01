@@ -17,6 +17,10 @@
             <views:ToggleConverter x:Key="toggleConverter"/>
             <views:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
             <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
+            <views:ValueConverterGroup x:Key="toggleToVisibilityConverter">
+                <views:ToggleConverter/>
+                <BooleanToVisibilityConverter/>
+            </views:ValueConverterGroup>
         </ResourceDictionary>
     </Window.Resources>
     <Window.InputBindings>
@@ -177,7 +181,8 @@
                    Margin="{Binding SelectingRectangleMargin}" 
                    Width="{Binding SelectingRectangleWidth}"
                    Height="{Binding SelectingRectangleHeight}"
-                   Fill="Transparent" StrokeThickness="2"
+                   StrokeThickness="{Binding SelectingRectangleLineWidth}"
+                   Fill="Transparent"
                    Panel.ZIndex="1000"
                    Visibility="{Binding RectangleVisibility}"
                    Cursor="Cross">
@@ -265,6 +270,36 @@
                       IsChecked="{Binding SelectedToolBarButton, Converter={StaticResource toggleConverter}, ConverterParameter=rectangle}"
                       ToolTip="枠を描画">
             <Image Source="../res/Rectangle_16x.png" />
+        </ToggleButton>
+        <ToggleButton Grid.Column="2" Margin="0,45,20,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
+                      IsChecked="{Binding SelectedLineWidthItem, Converter={StaticResource toggleConverter}, ConverterParameter=5px}"
+                      Visibility="{Binding SelectedToolBarButton, Converter={StaticResource toggleToVisibilityConverter}, ConverterParameter=rectangle}"
+                      ToolTip="5px">
+            <Rectangle Width="18" Height="5" Stroke="{Binding SelectedColor}">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{Binding SelectedColor}"/>
+                </Rectangle.Fill>
+            </Rectangle>
+        </ToggleButton>
+        <ToggleButton Grid.Column="2" Margin="0,80,20,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
+                      IsChecked="{Binding SelectedLineWidthItem, Converter={StaticResource toggleConverter}, ConverterParameter=3px}"
+                      Visibility="{Binding SelectedToolBarButton, Converter={StaticResource toggleToVisibilityConverter}, ConverterParameter=rectangle}"
+                      ToolTip="3px">
+            <Rectangle Width="18" Height="3" Stroke="{Binding SelectedColor}">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{Binding SelectedColor}"/>
+                </Rectangle.Fill>
+            </Rectangle>        
+        </ToggleButton>
+        <ToggleButton Grid.Column="2" Margin="0,115,20,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
+                      IsChecked="{Binding SelectedLineWidthItem, Converter={StaticResource toggleConverter}, ConverterParameter=1px}"
+                      Visibility="{Binding SelectedToolBarButton, Converter={StaticResource toggleToVisibilityConverter}, ConverterParameter=rectangle}"
+                      ToolTip="1px">
+            <Rectangle Width="18" Height="1" Stroke="{Binding SelectedColor}">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{Binding SelectedColor}"/>
+                </Rectangle.Fill>
+            </Rectangle>
         </ToggleButton>
     </Grid>
 </Window>

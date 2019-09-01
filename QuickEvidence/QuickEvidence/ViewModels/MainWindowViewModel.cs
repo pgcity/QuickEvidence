@@ -48,6 +48,7 @@ namespace QuickEvidence.ViewModels
         public MainWindowViewModel()
         {
             SelectedToolBarButton = Properties.Settings.Default.SelectedToolBarButton;
+            SelectedLineWidthItem = Properties.Settings.Default.SelectedLineWidthItem;
             SelectedColor = Color.FromRgb(
                 Properties.Settings.Default.Color_R,
                 Properties.Settings.Default.Color_G,
@@ -243,6 +244,43 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
+        /// 線の太さ
+        /// </summary>
+        private string _selectedLineWidthItem = "3px";
+        public string SelectedLineWidthItem
+        {
+            get { return _selectedLineWidthItem; }
+            set {
+                if(value == null)
+                {
+                    return;
+                }
+                SetProperty(ref _selectedLineWidthItem, value);
+                Properties.Settings.Default.SelectedLineWidthItem = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        /// <summary>
+        /// 線の太さ（数値）
+        /// </summary>
+        public int SelectedLineWidth {
+            get
+            {
+                switch (SelectedLineWidthItem)
+                {
+                    case "5px":
+                        return 5;
+                    case "3px":
+                        return 3;
+                    case "1px":
+                        return 1;
+                }
+                return 3;
+            }
+        }
+
+        /// <summary>
         /// 選択中四角形のマージン
         /// </summary>
         private Thickness _selectingRectangleMargin;
@@ -270,6 +308,16 @@ namespace QuickEvidence.ViewModels
         {
             get { return _selectingRectangleHeight; }
             set { SetProperty(ref _selectingRectangleHeight, value); }
+        }
+
+        /// <summary>
+        /// 選択中四角形の線の太さ
+        /// </summary>
+        private int _selectingRectangleLineWidth = 3;
+        public int SelectingRectangleLineWidth
+        {
+            get { return _selectingRectangleLineWidth; }
+            set { SetProperty(ref _selectingRectangleLineWidth, value); }
         }
 
         /// <summary>
@@ -672,6 +720,7 @@ namespace QuickEvidence.ViewModels
                 SelectingRectangleMargin = new Thickness(DragStartPosScrollViewer.X, DragStartPosScrollViewer.Y, 0, 0);
                 SelectingRectangleWidth = 0;
                 SelectingRectangleHeight = 0;
+                SelectingRectangleLineWidth = SelectedLineWidth;
                 RectangleVisibility = Visibility.Visible;
             }
             if(SelectedToolBarButton == "text")
@@ -1415,7 +1464,7 @@ ExactSpelling = true)]
             //拡大率で割る
             var startPos = new Point(DragStartPosViewBox.X * 100 / ExpansionRate, DragStartPosViewBox.Y * 100 / ExpansionRate);
             var endPos = new Point(DragEndPosViewBox.X * 100 / ExpansionRate, DragEndPosViewBox.Y * 100 / ExpansionRate);
-            drawingContext.DrawRectangle(Brushes.Transparent, new Pen(new SolidColorBrush(SelectedColor), 2), new Rect(startPos, endPos));
+            drawingContext.DrawRectangle(Brushes.Transparent, new Pen(new SolidColorBrush(SelectedColor), SelectedLineWidth), new Rect(startPos, endPos));
             drawingContext.Close();
 
             ImageSource.Render(drawingVisual);

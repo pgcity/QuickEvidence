@@ -109,6 +109,7 @@
       <DependentUpon>TextInputWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ToggleConverter.cs" />
+    <Compile Include="Views\ValueConverterGroup.cs" />
     <Page Include="Views\FileRenameWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

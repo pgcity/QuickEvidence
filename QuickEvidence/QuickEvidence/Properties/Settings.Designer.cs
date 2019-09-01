@@ -117,5 +117,17 @@ namespace QuickEvidence.Properties {
                 this["FontSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3px")]
+        public string SelectedLineWidthItem {
+            get {
+                return ((string)(this["SelectedLineWidthItem"]));
+            }
+            set {
+                this["SelectedLineWidthItem"] = value;
+            }
+        }
     }
 }
