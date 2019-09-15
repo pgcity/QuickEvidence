@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using OCRLib;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -1461,14 +1462,54 @@ ExactSpelling = true)]
             DrawingVisual drawingVisual = new DrawingVisual();
             DrawingContext drawingContext = drawingVisual.RenderOpen();
 
-            //拡大率で割る
-            var startPos = new Point(DragStartPosViewBox.X * 100 / ExpansionRate, DragStartPosViewBox.Y * 100 / ExpansionRate);
-            var endPos = new Point(DragEndPosViewBox.X * 100 / ExpansionRate, DragEndPosViewBox.Y * 100 / ExpansionRate);
-            drawingContext.DrawRectangle(Brushes.Transparent, new Pen(new SolidColorBrush(SelectedColor), SelectedLineWidth), new Rect(startPos, endPos));
-            drawingContext.Close();
+            CroppedBitmap croppedBitmap = new CroppedBitmap();
+            // 四角形部分のコピー
+            try
+            {
+                croppedBitmap = new CroppedBitmap(ImageSource,
+                    new Int32Rect(
+                        (int)DragStartPosViewBox.X,
+                        (int)DragStartPosViewBox.Y,
+                        (int)Math.Abs(DragEndPosViewBox.X - DragStartPosViewBox.X),
+                        (int)Math.Abs(DragEndPosViewBox.Y - DragStartPosViewBox.Y)));
 
-            ImageSource.Render(drawingVisual);
-            IsModify = true;
+
+                //拡大率で割る
+                var startPos = new Point(DragStartPosViewBox.X * 100 / ExpansionRate, DragStartPosViewBox.Y * 100 / ExpansionRate);
+                var endPos = new Point(DragEndPosViewBox.X * 100 / ExpansionRate, DragEndPosViewBox.Y * 100 / ExpansionRate);
+                drawingContext.DrawImage(croppedBitmap.Clone(), new Rect(
+            (int)0,
+            (int)0,
+            (int)Math.Abs(DragEndPosViewBox.X - DragStartPosViewBox.X),
+            (int)Math.Abs(DragEndPosViewBox.Y - DragStartPosViewBox.Y)));
+
+               //drawingContext.DrawRectangle(Brushes.Transparent, new Pen(new SolidColorBrush(SelectedColor), SelectedLineWidth), new Rect(startPos, endPos));
+                drawingContext.Close();
+
+                ImageSource.Render(drawingVisual);
+                IsModify = true;
+
+
+
+
+
+
+                BmpBitmapEncoder encoder = new BmpBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
+
+                MemoryStream ms = new MemoryStream();
+                encoder.Save(ms);
+
+                ms.Seek(0, SeekOrigin.Begin);
+
+                OCRCore core = new OCRCore();
+                var result = core.OCRMainAsync(ms);
+
+            }
+            catch
+            {
+
+            }
         }
 
         /// <summary>
