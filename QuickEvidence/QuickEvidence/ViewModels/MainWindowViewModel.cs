@@ -999,7 +999,10 @@ ExactSpelling = true)]
             {
                 selectedItem.IsSelected = false;
             }
-            item.IsSelected = true;
+            if(item != null)
+            {
+                item.IsSelected = true;
+            }
         }
 
         /// <summary>
@@ -1059,8 +1062,11 @@ ExactSpelling = true)]
                     }
                 }
 
-                SelectSingleItem(nextItem);
-                ScrollDataGridIF.ScrollToItem(nextItem);
+                if(nextItem != null)
+                {
+                    SelectSingleItem(nextItem);
+                    ScrollDataGridIF.ScrollToItem(nextItem);
+                }
                 return true;
             }
             return false;
