@@ -1372,12 +1372,23 @@ ExactSpelling = true)]
                 // ビットマップの読み込み
                 BitmapImage tmpBitmap = new BitmapImage();
 
-                FileStream stream = File.OpenRead(SelectedFiles[0].FullPath);
-                tmpBitmap.BeginInit();
-                tmpBitmap.CacheOption = BitmapCacheOption.OnLoad;
-                tmpBitmap.StreamSource = stream;
-                tmpBitmap.EndInit();
-                stream.Close();
+                try
+                {
+                    using (var stream = File.OpenRead(SelectedFiles[0].FullPath))
+                    {
+                        tmpBitmap.BeginInit();
+                        tmpBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        tmpBitmap.StreamSource = stream;
+                        tmpBitmap.EndInit();
+                    }
+                }
+                catch (Exception)
+                {
+                    ImageSource = null;
+                    ViewBoxWidth = null;
+                    ViewBoxHeight = null;
+                    return;
+                }
 
                 // 描画可能なビットマップに変更
                 DrawingVisual drawingVisual = new DrawingVisual();
