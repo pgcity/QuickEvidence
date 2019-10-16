@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace QuickEvidence.ViewModels
 {
-    public interface IScrollDataGrid
+    public interface IDataGrid
     {
         bool ScrollToItem(FileItemViewModel item);
+
+        void SetCurrentCell(FileItemViewModel item);
     }
 }

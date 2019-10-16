@@ -9,7 +9,7 @@ namespace QuickEvidence.Views
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class MainWindow : Window, IGetPosition, IColorDialog, ITextInputWindow, IScrollDataGrid, INavigation
+    public partial class MainWindow : Window, IGetPosition, IColorDialog, ITextInputWindow, IDataGrid, INavigation
     {
         public MainWindow()
         {
@@ -19,7 +19,7 @@ namespace QuickEvidence.Views
             vm.GetPositionIF = this;
             vm.ColorDialogIF = this;
             vm.TextInputWindowIF = this;
-            vm.ScrollDataGridIF = this;
+            vm.DataGridIF = this;
             vm.NavigationIF = this;
         }
 
@@ -66,6 +66,15 @@ namespace QuickEvidence.Views
                 fileListDataGrid.ScrollIntoView(item);
             }
             return true;
+        }
+
+        /// <summary>
+        /// データグリッドのカレント（枠のある）セルを設定する
+        /// </summary>
+        /// <param name="item"></param>
+        public void SetCurrentCell(FileItemViewModel item)
+        {
+            fileListDataGrid.CurrentItem = item;
         }
 
         /// <summary>

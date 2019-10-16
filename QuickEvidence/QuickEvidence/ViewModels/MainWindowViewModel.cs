@@ -21,19 +21,19 @@ namespace QuickEvidence.ViewModels
         public ITextInputWindow TextInputWindowIF { get; internal set; }
 
         /// <summary>
-        /// スクロールIF。セットされた時点で選択があればそこにスクロール
+        /// DataGrid IF。スクロールとフォーカスの制御
         /// </summary>
-        private IScrollDataGrid _scrollDataGridIF;
-        public IScrollDataGrid ScrollDataGridIF {
+        private IDataGrid _dataGridIF;
+        public IDataGrid DataGridIF {
             get {
-                return _scrollDataGridIF;
+                return _dataGridIF;
             }
             internal set
             {
-                _scrollDataGridIF = value;
-                if(_scrollDataGridIF != null && SelectedFiles.Count > 0)
+                _dataGridIF = value;
+                if(_dataGridIF != null && SelectedFiles.Count > 0)
                 {
-                    _scrollDataGridIF.ScrollToItem(SelectedFiles[0]);
+                    _dataGridIF.ScrollToItem(SelectedFiles[0]);
                 }
             }
         }
@@ -843,7 +843,7 @@ namespace QuickEvidence.ViewModels
                 if (FileItems.Count > 0)
                 {
                     SelectSingleItem(FileItems[0]);
-                    ScrollDataGridIF.ScrollToItem(FileItems[0]);
+                    DataGridIF.ScrollToItem(FileItems[0]);
                 }
             }
             if (arg.Key == Key.End)
@@ -856,7 +856,7 @@ namespace QuickEvidence.ViewModels
                 if (FileItems.Count > 0)
                 {
                     SelectSingleItem(FileItems[FileItems.Count - 1]);
-                    ScrollDataGridIF.ScrollToItem(FileItems[FileItems.Count - 1]);
+                    DataGridIF.ScrollToItem(FileItems[FileItems.Count - 1]);
                 }
             }
         }
@@ -1002,6 +1002,7 @@ ExactSpelling = true)]
             if(item != null)
             {
                 item.IsSelected = true;
+                DataGridIF.SetCurrentCell(item);
             }
         }
 
@@ -1024,7 +1025,7 @@ ExactSpelling = true)]
             if (nextFile != null)
             {
                 SelectSingleItem(nextFile);
-                ScrollDataGridIF.ScrollToItem(nextFile);
+                DataGridIF.ScrollToItem(nextFile);
             }
         }
 
@@ -1065,7 +1066,7 @@ ExactSpelling = true)]
                 if(nextItem != null)
                 {
                     SelectSingleItem(nextItem);
-                    ScrollDataGridIF.ScrollToItem(nextItem);
+                    DataGridIF.ScrollToItem(nextItem);
                 }
                 return true;
             }
@@ -1190,7 +1191,7 @@ ExactSpelling = true)]
             var scrollItem = movedFiles.First();
             if(scrollItem != null)
             {
-                ScrollDataGridIF.ScrollToItem(scrollItem);
+                DataGridIF.ScrollToItem(scrollItem);
             }
 
 
@@ -1256,7 +1257,7 @@ ExactSpelling = true)]
             var scrollItem = movedFiles.First();
             if (scrollItem != null)
             {
-                ScrollDataGridIF.ScrollToItem(scrollItem);
+                DataGridIF.ScrollToItem(scrollItem);
             }
 
             return true; //移動にかかわらずファイルは存在するので成功にする

@@ -91,7 +91,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ViewModels\FileRenameWindowViewModel.cs" />
-    <Compile Include="ViewModels\IScrollDataGrid.cs" />
+    <Compile Include="ViewModels\IDataGrid.cs" />
     <Compile Include="ViewModels\TextInputWindowViewModel.cs" />
     <Compile Include="Views\FileRenameWindow.xaml.cs">
       <DependentUpon>FileRenameWindow.xaml</DependentUpon>
