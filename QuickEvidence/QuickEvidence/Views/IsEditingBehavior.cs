@@ -57,7 +57,7 @@ namespace QuickEvidence.Views
             if (textBox != null && vm != null)
             {
                 //拡張子を除く部分だけ選択する
-                var fileNameWOExt = System.IO.Path.GetFileNameWithoutExtension(vm.FullPath);
+                var fileNameWOExt = System.IO.Path.GetFileNameWithoutExtension(textBox.Text);
                 textBox.SelectionStart = 0;
                 textBox.SelectionLength = fileNameWOExt.Length;
             }
