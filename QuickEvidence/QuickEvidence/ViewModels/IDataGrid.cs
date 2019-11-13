@@ -11,5 +11,9 @@ namespace QuickEvidence.ViewModels
         bool ScrollToItem(FileItemViewModel item);
 
         void SetCurrentCell(FileItemViewModel item);
+
+        void CommitEdit();
+
+        void CancelEdit();
     }
 }

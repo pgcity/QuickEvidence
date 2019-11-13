@@ -23,6 +23,22 @@ namespace QuickEvidence.Views
             vm.NavigationIF = this;
         }
 
+        /// <summary>
+        /// DataGridの編集をキャンセル
+        /// </summary>
+        public void CancelEdit()
+        {
+            fileListDataGrid.CancelEdit();
+        }
+
+        /// <summary>
+        /// DataGridの編集をコミット
+        /// </summary>
+        public void CommitEdit()
+        {
+            fileListDataGrid.CommitEdit();
+        }
+
         public Point GetPositionFromScrollViewer(MouseEventArgs arg)
         {
             return arg.GetPosition(mainScrollViewer);

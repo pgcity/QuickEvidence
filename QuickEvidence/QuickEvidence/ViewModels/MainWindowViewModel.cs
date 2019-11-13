@@ -524,7 +524,12 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteFileListPreviewKeyDownCommand(KeyEventArgs args)
         {
-            if(args.Key == Key.F2 && !IsFileNameEditing)
+            if (args.Key == Key.Enter && IsFileNameEditing)
+            {
+                DataGridIF.CommitEdit();
+                args.Handled = true;
+            }
+            if (args.Key == Key.F2 && !IsFileNameEditing)
             {
                 ExecuteRenameCommand();
                 args.Handled = true;
