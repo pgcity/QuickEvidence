@@ -36,7 +36,7 @@ namespace QuickEvidence.Views
         /// </summary>
         public void CommitEdit()
         {
-            fileListDataGrid.CommitEdit();
+            fileListDataGrid.CommitEdit(System.Windows.Controls.DataGridEditingUnit.Row, true);
         }
 
         public Point GetPositionFromScrollViewer(MouseEventArgs arg)
