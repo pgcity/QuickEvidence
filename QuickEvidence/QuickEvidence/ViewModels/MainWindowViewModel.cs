@@ -59,6 +59,7 @@ namespace QuickEvidence.ViewModels
                 FolderPath = Directory.GetCurrentDirectory();
                 Properties.Settings.Default.Save();
             }
+            ExpansionRate = Properties.Settings.Default.ExpansionRate;
 
             UpdateFileList();
             UpdateWindowTitle();
@@ -414,6 +415,9 @@ namespace QuickEvidence.ViewModels
             //選択したファイル名を保存
             Properties.Settings.Default.SelectedFiles = new System.Collections.Specialized.StringCollection();
             Properties.Settings.Default.SelectedFiles.AddRange((from x in SelectedFiles select x.FullPath).ToArray());
+
+            //拡大率を保存
+            Properties.Settings.Default.ExpansionRate = ExpansionRate;
             Properties.Settings.Default.Save();
         }
 
@@ -643,7 +647,7 @@ namespace QuickEvidence.ViewModels
                 }
                 else
                 {
-                    if (0 < ExpansionRate)
+                    if (10 < ExpansionRate)
                     {
                         ExpansionRate -= 10;
                     }

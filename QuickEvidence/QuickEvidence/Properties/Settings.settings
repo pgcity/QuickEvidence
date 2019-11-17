@@ -29,5 +29,8 @@
     <Setting Name="SelectedLineWidthItem" Type="System.String" Scope="User">
       <Value Profile="(Default)">3px</Value>
     </Setting>
+    <Setting Name="ExpansionRate" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
