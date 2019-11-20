@@ -10,7 +10,7 @@ namespace QuickEvidence.ViewModels
     {
         bool ScrollToItem(FileItemViewModel item);
 
-        void SetCurrentCell(FileItemViewModel item);
+        void SetCurrentCell(int index);
 
         void CommitEdit();
 

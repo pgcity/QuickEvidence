@@ -1011,7 +1011,7 @@ ExactSpelling = true)]
             if(item != null)
             {
                 item.IsSelected = true;
-                DataGridIF.SetCurrentCell(item);
+                DataGridIF.SetCurrentCell(FileItems.IndexOf(item));
             }
         }
 
