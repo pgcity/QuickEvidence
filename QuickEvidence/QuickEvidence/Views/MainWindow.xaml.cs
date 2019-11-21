@@ -103,11 +103,12 @@ namespace QuickEvidence.Views
                 {
                     row.Focusable = true;
                     row.IsSelected = true;
-                    row.Focus();
+                    cell.Focus();
                     //↑選択状態の変更やフォーカスのセットだけでなく、
                     //↓下記メソッドを実行する必要がある
                     var method = typeof(DataGrid).GetMethod("HandleSelectionForCellInput", BindingFlags.Instance | BindingFlags.NonPublic);
                     method.Invoke(fileListDataGrid, new object[] { cell, false, false, false });
+
                 }
             }
         }
