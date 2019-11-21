@@ -1,6 +1,7 @@
 ﻿using QuickEvidence.ViewModels;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -88,9 +89,27 @@ namespace QuickEvidence.Views
         /// データグリッドのカレント（枠のある）セルを設定する
         /// </summary>
         /// <param name="item"></param>
-        public void SetCurrentCell(FileItemViewModel item)
+        public void SetCurrentCell(int index)
         {
-            fileListDataGrid.CurrentItem = item;
+            var row = fileListDataGrid.ItemContainerGenerator.ContainerFromIndex(index) as DataGridRow;
+
+            var textBlock = fileListDataGrid.Columns[1].GetCellContent(row);
+            var cell = (DataGridCell)textBlock.Parent;
+
+            if (row != null)
+            {
+                if (cell != null)
+                {
+                    row.Focusable = true;
+                    row.IsSelected = true;
+                    cell.Focus();
+
+                    var HandleSelectionForCellInput = typeof(DataGrid).GetMethod("HandleSelectionForCellInput",
+                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                    HandleSelectionForCellInput.Invoke(fileListDataGrid, new object[] { cell, false, false, false });
+
+                }
+            }
         }
 
         /// <summary>
