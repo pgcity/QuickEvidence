@@ -210,7 +210,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <Viewbox Name="mainViewBox" Width="{Binding ViewBoxWidth}" Height="{Binding ViewBoxHeight}"
-                     RenderOptions.EdgeMode="Aliased" RenderOptions.BitmapScalingMode="NearestNeighbor">
+                     RenderOptions.EdgeMode="Aliased">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseMove">
                         <prism:InvokeCommandAction Command="{Binding MouseMoveCommand}"/>
@@ -223,7 +223,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
                 <Image Source="{Binding ImageSource}" Cursor="{Binding ImageMouseCursor}"
-                       RenderOptions.EdgeMode="Aliased" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                       RenderOptions.EdgeMode="Aliased"/>
             </Viewbox>
         </ScrollViewer>
 
