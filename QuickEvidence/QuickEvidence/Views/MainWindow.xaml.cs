@@ -1,6 +1,5 @@
 ﻿using QuickEvidence.ViewModels;
 using System;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -92,7 +91,7 @@ namespace QuickEvidence.Views
         /// <param name="item"></param>
         public void SetCurrentCell(int index)
         {
-            DataGridRow row = fileListDataGrid.ItemContainerGenerator.ContainerFromIndex(index) as DataGridRow;
+            var row = fileListDataGrid.ItemContainerGenerator.ContainerFromIndex(index) as DataGridRow;
 
             var textBlock = fileListDataGrid.Columns[1].GetCellContent(row);
             var cell = (DataGridCell)textBlock.Parent;
@@ -104,10 +103,10 @@ namespace QuickEvidence.Views
                     row.Focusable = true;
                     row.IsSelected = true;
                     cell.Focus();
-                    //↑選択状態の変更やフォーカスのセットだけでなく、
-                    //↓下記メソッドを実行する必要がある
-                    var method = typeof(DataGrid).GetMethod("HandleSelectionForCellInput", BindingFlags.Instance | BindingFlags.NonPublic);
-                    method.Invoke(fileListDataGrid, new object[] { cell, false, false, false });
+
+                    var HandleSelectionForCellInput = typeof(DataGrid).GetMethod("HandleSelectionForCellInput",
+                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                    HandleSelectionForCellInput.Invoke(fileListDataGrid, new object[] { cell, false, false, false });
 
                 }
             }
