@@ -803,6 +803,7 @@ namespace QuickEvidence.ViewModels
             }
             if (SaveImage()){
                 IsModify = false;
+                SelectSingleItem(SelectedFiles[0]);
             }
         }
 
@@ -811,9 +812,9 @@ namespace QuickEvidence.ViewModels
         /// </summary>
         private DelegateCommand _cancelCommand;
         public DelegateCommand CancelCommand =>
-            _cancelCommand ?? (_cancelCommand = new DelegateCommand(ExecuteCommandName));
+            _cancelCommand ?? (_cancelCommand = new DelegateCommand(ExecuteCancelCommand));
 
-        void ExecuteCommandName()
+        void ExecuteCancelCommand()
         {
             if (!IsModify)
             {
@@ -821,6 +822,7 @@ namespace QuickEvidence.ViewModels
             }
             LoadImage();
             IsModify = false;
+            SelectSingleItem(SelectedFiles[0]);
         }
 
         /// <summary>
