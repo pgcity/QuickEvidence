@@ -1489,8 +1489,12 @@ ExactSpelling = true)]
             DrawingContext drawingContext = drawingVisual.RenderOpen();
 
             //拡大率で割る
-            var startPos = new Point(DragStartPosViewBox.X * 100 / ExpansionRate, DragStartPosViewBox.Y * 100 / ExpansionRate);
-            var endPos = new Point(DragEndPosViewBox.X * 100 / ExpansionRate, DragEndPosViewBox.Y * 100 / ExpansionRate);
+            var startPos = new Point(
+                Math.Round(DragStartPosViewBox.X * 100 / ExpansionRate) + 0.5,
+                Math.Round(DragStartPosViewBox.Y * 100 / ExpansionRate) + 0.5);
+            var endPos = new Point(
+                Math.Round(DragEndPosViewBox.X * 100 / ExpansionRate) + 0.5,
+                Math.Round(DragEndPosViewBox.Y * 100 / ExpansionRate) + 0.5);
             drawingContext.DrawRectangle(Brushes.Transparent, new Pen(new SolidColorBrush(SelectedColor), SelectedLineWidth), new Rect(startPos, endPos));
             drawingContext.Close();
 

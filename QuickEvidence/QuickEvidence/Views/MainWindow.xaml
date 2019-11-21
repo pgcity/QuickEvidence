@@ -209,7 +209,8 @@
                     <prism:InvokeCommandAction Command="{Binding ViewBoxKeyDownCommand}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-            <Viewbox Name="mainViewBox" Width="{Binding ViewBoxWidth}" Height="{Binding ViewBoxHeight}">
+            <Viewbox Name="mainViewBox" Width="{Binding ViewBoxWidth}" Height="{Binding ViewBoxHeight}"
+                     RenderOptions.EdgeMode="Aliased" RenderOptions.BitmapScalingMode="NearestNeighbor">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseMove">
                         <prism:InvokeCommandAction Command="{Binding MouseMoveCommand}"/>
@@ -221,7 +222,8 @@
                         <prism:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-                <Image Source="{Binding ImageSource}" Cursor="{Binding ImageMouseCursor}"/>
+                <Image Source="{Binding ImageSource}" Cursor="{Binding ImageMouseCursor}"
+                       RenderOptions.EdgeMode="Aliased" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
             </Viewbox>
         </ScrollViewer>
 
