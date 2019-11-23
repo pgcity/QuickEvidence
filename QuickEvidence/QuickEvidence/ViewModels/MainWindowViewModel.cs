@@ -843,7 +843,10 @@ namespace QuickEvidence.ViewModels
             }
             if (SaveImage()){
                 IsModify = false;
-                SelectSingleItem(SelectedFiles[0]);
+                if (SelectedFiles.Count > 0 && SelectedFiles[0] != null)
+                {
+                    SelectSingleItem(SelectedFiles[0]);
+                }
             }
         }
 
@@ -862,7 +865,10 @@ namespace QuickEvidence.ViewModels
             }
             LoadImage();
             IsModify = false;
-            SelectSingleItem(SelectedFiles[0]);
+            if (SelectedFiles.Count > 0 && SelectedFiles[0] != null)
+            {
+                SelectSingleItem(SelectedFiles[0]);
+            }
         }
 
         /// <summary>
