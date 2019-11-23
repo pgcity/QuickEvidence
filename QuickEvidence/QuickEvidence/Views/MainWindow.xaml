@@ -27,6 +27,8 @@
         <KeyBinding Key="F11" Command="{Binding FullScreenCommand}"/>
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveCommand}"/>
         <KeyBinding Key="Esc" Command="{Binding CancelCommand}"/>
+        <KeyBinding Key="Z" Modifiers="Ctrl" Command="{Binding UndoCommand}"/>
+        <KeyBinding Key="Y" Modifiers="Ctrl" Command="{Binding RedoCommand}"/>
         <KeyBinding Key="F5" Command="{Binding UpdateCommand}"/>
         <KeyBinding Key="F1" Command="{Binding HelpCommand}"/>
         <KeyBinding Key="F2" Command="{Binding RenameCommand}"/>
@@ -231,14 +233,28 @@
         <Button Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,0" Width="30" Height="30" VerticalAlignment="Top"
                 Visibility="{Binding IsModify, Converter={StaticResource booleanToVisibilityConverter}}"
                 Command="{Binding CancelCommand}"
-                ToolTip="変更をキャンセル">
+                ToolTip="変更をキャンセル (Esc)">
             <Image Source="../res/Cancel_16x.png"/>
         </Button>
-        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="51,10,0,0" Width="30" Height="30" VerticalAlignment="Top"
+        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="50,10,0,0" Width="30" Height="30" VerticalAlignment="Top"
                 Visibility="{Binding IsModify, Converter={StaticResource booleanToVisibilityConverter}}"
                 Command="{Binding SaveCommand}"
-                ToolTip="変更を保存">
+                ToolTip="保存して編集完了 (Ctrl+S)">
             <Image Source="../res/Checkmark_16x.png" />
+        </Button>
+        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="90,10,0,0" Width="30" Height="30" VerticalAlignment="Top"
+                Visibility="{Binding IsModify, Converter={StaticResource booleanToVisibilityConverter}}"
+                IsEnabled="{Binding CanUndo}"
+                Command="{Binding UndoCommand}"
+                ToolTip="元に戻す (Ctrl+Z)">
+            <iconPacks:PackIconMaterial Kind="Undo" Foreground="DarkCyan" Margin="3 0 0 0" />
+        </Button>
+        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="130,10,0,0" Width="30" Height="30" VerticalAlignment="Top"
+                Visibility="{Binding IsModify, Converter={StaticResource booleanToVisibilityConverter}}"
+                IsEnabled="{Binding CanRedo}"
+                Command="{Binding RedoCommand}"
+                ToolTip="やり直し (Ctrl+Y)">
+            <iconPacks:PackIconMaterial Kind="Redo" Foreground="DarkCyan" Margin="3 0 0 0" />
         </Button>
 
         <TextBlock Grid.Column="2" Width="70" Margin="0,15,280.2,0"

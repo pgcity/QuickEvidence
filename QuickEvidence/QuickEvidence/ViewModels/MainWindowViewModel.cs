@@ -181,6 +181,46 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
+        /// 元に戻す履歴情報 末尾のデータが、次に戻るデータ
+        /// </summary>
+        private ObservableCollection<RenderTargetBitmap> _undoStack = new ObservableCollection<RenderTargetBitmap>();
+        public ObservableCollection<RenderTargetBitmap> UndoStack
+        {
+            get { return _undoStack; }
+            set { SetProperty(ref _undoStack, value); }
+        }
+
+        /// <summary>
+        /// やり直し情報 末尾のデータが、次にやり直すデータ
+        /// </summary>
+        private ObservableCollection<RenderTargetBitmap> _redoStack = new ObservableCollection<RenderTargetBitmap>();
+        public ObservableCollection<RenderTargetBitmap> RedoStack
+        {
+            get { return _redoStack; }
+            set { SetProperty(ref _redoStack, value); }
+        }
+
+        /// <summary>
+        /// 元に戻すことができる
+        /// </summary>
+        private bool _canUndo = false;
+        public bool CanUndo
+        {
+            get { return _canUndo; }
+            set { SetProperty(ref _canUndo, value); }
+        }
+
+        /// <summary>
+        /// やり直しができる
+        /// </summary>
+        private bool _canRedo = false;
+        public bool CanRedo
+        {
+            get { return _canRedo; }
+            set { SetProperty(ref _canRedo, value); }
+        }
+
+        /// <summary>
         /// イメージソース
         /// </summary>
         private RenderTargetBitmap _imageSource;
@@ -611,7 +651,7 @@ namespace QuickEvidence.ViewModels
 
         void ExecuteExpansionRateChangedCommand()
         {
-            UpdateExpansionRate();
+            UpdateViewBoxSize();
         }
 
         /// <summary>
@@ -823,6 +863,30 @@ namespace QuickEvidence.ViewModels
             LoadImage();
             IsModify = false;
             SelectSingleItem(SelectedFiles[0]);
+        }
+
+        /// <summary>
+        /// 元に戻す
+        /// </summary>
+        private DelegateCommand _undoCommand;
+        public DelegateCommand UndoCommand =>
+            _undoCommand ?? (_undoCommand = new DelegateCommand(ExecuteUndoCommand));
+
+        void ExecuteUndoCommand()
+        {
+            Undo();
+        }
+
+        /// <summary>
+        /// やり直し
+        /// </summary>
+        private DelegateCommand _redoCommand;
+        public DelegateCommand RedoCommand =>
+            _redoCommand ?? (_redoCommand = new DelegateCommand(ExecuteRedoCommand));
+
+        void ExecuteRedoCommand()
+        {
+            Redo();
         }
 
         /// <summary>
@@ -1414,8 +1478,11 @@ ExactSpelling = true)]
                 bitmap.Render(drawingVisual);
                 ImageSource = bitmap;
 
+                // 元に戻す・やり直し情報をクリア
+                ClearUndoRedoStack();
+
                 // 倍率設定
-                UpdateExpansionRate();
+                UpdateViewBoxSize();
             }
             else
             {
@@ -1469,9 +1536,9 @@ ExactSpelling = true)]
         }
 
         /// <summary>
-        /// 拡大率更新
+        /// 拡大率に合わせてViewBoxのサイズを更新
         /// </summary>
-        private void UpdateExpansionRate()
+        private void UpdateViewBoxSize()
         {
             if(ImageSource == null)
             {
@@ -1487,6 +1554,9 @@ ExactSpelling = true)]
         /// </summary>
         private void DrawRectangle()
         {
+            // 元に戻す情報に追加
+            PushUndoStack();
+
             DrawingVisual drawingVisual = new DrawingVisual();
             DrawingContext drawingContext = drawingVisual.RenderOpen();
 
@@ -1510,6 +1580,9 @@ ExactSpelling = true)]
         /// <param name="text"></param>
         private void DrawText(TextInputWindowViewModel vm)
         {
+            // 元に戻す情報に追加
+            PushUndoStack();
+
             DrawingVisual drawingVisual = new DrawingVisual();
             DrawingContext drawingContext = drawingVisual.RenderOpen();
 
@@ -1529,6 +1602,83 @@ ExactSpelling = true)]
 
             ImageSource.Render(drawingVisual);
             IsModify = true;
+        }
+
+        /// <summary>
+        /// 元に戻す情報にプッシュする
+        /// </summary>
+        void PushUndoStack()
+        {
+            // 描画可能なビットマップに変更
+            DrawingVisual drawingVisual = new DrawingVisual();
+            DrawingContext drawingContext = drawingVisual.RenderOpen();
+            drawingContext.DrawImage(ImageSource, new Rect(0, 0, ImageSource.Width, ImageSource.Height));
+            drawingContext.Close();
+
+            // 96dpi に固定して読み込み
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)ImageSource.Width, (int)ImageSource.Height,
+                                                            /*tmpBitmap.DpiX*/96, /*tmpBitmap.DpiY*/96, PixelFormats.Pbgra32);
+            bitmap.Render(drawingVisual);
+            UndoStack.Add(bitmap);
+
+            //今までのやり直し情報はクリア
+            RedoStack.Clear();
+
+            UpdateUndoRedoStatus();
+        }
+
+        /// <summary>
+        /// 元に戻す・やり直し情報をクリアする
+        /// </summary>
+        void ClearUndoRedoStack()
+        {
+            UndoStack.Clear();
+            RedoStack.Clear();
+
+            UpdateUndoRedoStatus();
+
+            // メモリを解放しておく
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
+        /// <summary>
+        /// 元に戻す
+        /// </summary>
+        void Undo()
+        {
+            if(CanUndo && UndoStack.Count > 0)
+            {
+                RedoStack.Add(ImageSource);
+                ImageSource = UndoStack.Last();
+                UndoStack.RemoveAt(UndoStack.Count - 1);
+
+                UpdateUndoRedoStatus();
+            }
+        }
+
+        /// <summary>
+        /// やり直し
+        /// </summary>
+        void Redo()
+        {
+            if (CanRedo && RedoStack.Count > 0)
+            {
+                UndoStack.Add(ImageSource);
+                ImageSource = RedoStack.Last();
+                RedoStack.RemoveAt(RedoStack.Count - 1);
+
+                UpdateUndoRedoStatus();
+            }
+        }
+
+        /// <summary>
+        /// UndoとRedoボタンの状態を更新する
+        /// </summary>
+        private void UpdateUndoRedoStatus()
+        {
+            CanUndo = UndoStack.Count > 0;
+            CanRedo = RedoStack.Count > 0;
         }
     }
 }
