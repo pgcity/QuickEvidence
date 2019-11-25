@@ -10,7 +10,7 @@
             Title="ファイル名の変更" WindowStyle="ToolWindow">
     <Grid FocusManager.FocusedElement="{Binding ElementName=FileNameTextBox}">
         <Label Content="ファイル名（拡張子を除く）" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="FileNameTextBox" HorizontalAlignment="Left" Height="23" Margin="150,27,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox x:Name="FileNameTextBox" HorizontalAlignment="Left" Height="23" Margin="150,27,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged}"/>
         <Label Content="開始番号" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top"/>
         <mah:NumericUpDown x:Name="FirstNumberTextBox" HorizontalAlignment="Left" Height="23" Margin="150,67,0,0" VerticalAlignment="Top" Width="120" Value="{Binding StartNo}"/>
 
