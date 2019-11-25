@@ -1186,6 +1186,13 @@ ExactSpelling = true)]
             int currentNo = startNo;
             foreach (var file in SelectedFiles)
             {
+                // ファイル名チェック&メッセージ
+                if (!FileItemViewModel.FileNameCheck(fileName))
+                {
+                    resultMessage = "ファイル名には次の文字は使えません:\n\\ / : * ? \" < > |";
+                    return false;
+                }
+
                 var ext = Path.GetExtension(file.FullPath);
                 var newPath = Path.Combine(file.FolderFullPath, MakeFileName(fileName, currentNo, ext));
 

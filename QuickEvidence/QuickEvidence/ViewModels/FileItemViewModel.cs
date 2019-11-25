@@ -55,6 +55,13 @@ namespace QuickEvidence.ViewModels
 
             if (File.Exists(oldFullPath))
             {
+                // ファイル名チェック&メッセージ
+                if (!FileNameCheck(newName))
+                {
+                    MessageBox.Show("ファイル名には次の文字は使えません:\n\\ / : * ? \" < > |");
+                    return false;
+                }
+
                 //旧パスがある場合は変更を試みる。失敗なら変更しない。
                 var newFullPath = Path.Combine(FolderFullPath, newName);
                 try
@@ -136,6 +143,21 @@ namespace QuickEvidence.ViewModels
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// ファイル名の禁則文字の有無チェック
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns>true:問題なし, false:問題あり</returns>
+        public static bool FileNameCheck(string fileName)
+        {
+            var exclusionChar = new char[] { '\\', '/', ':', '*', '?', '\"', '<', '>', '|' };
+            if (0 < (from x in exclusionChar where fileName.Contains(x) select x).Count())
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
