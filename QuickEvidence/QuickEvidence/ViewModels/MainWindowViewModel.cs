@@ -243,8 +243,8 @@ namespace QuickEvidence.ViewModels
         /// <summary>
         /// ViewBoxの幅（拡大率に合わせて調整する）
         /// </summary>
-        private int? _viewBoxWidth;
-        public int? ViewBoxWidth
+        private int _viewBoxWidth;
+        public int ViewBoxWidth
         {
             get { return _viewBoxWidth; }
             set { SetProperty(ref _viewBoxWidth, value); }
@@ -253,8 +253,8 @@ namespace QuickEvidence.ViewModels
         /// <summary>
         /// ViewBoxの高さ（拡大率に合わせて調整する）
         /// </summary>
-        private int? _viewBoxHeight;
-        public int? ViewBoxHeight
+        private int _viewBoxHeight;
+        public int ViewBoxHeight
         {
             get { return _viewBoxHeight; }
             set { SetProperty(ref _viewBoxHeight, value); }
@@ -1441,8 +1441,6 @@ ExactSpelling = true)]
             if (SelectedFiles.Count == 0 || SelectedFiles.Count > 1)
             {
                 ImageSource = null;
-                ViewBoxWidth = null;
-                ViewBoxHeight = null;
                 return;
             }
 
@@ -1467,8 +1465,6 @@ ExactSpelling = true)]
                 catch (Exception)
                 {
                     ImageSource = null;
-                    ViewBoxWidth = null;
-                    ViewBoxHeight = null;
                     return;
                 }
 
@@ -1493,8 +1489,6 @@ ExactSpelling = true)]
             else
             {
                 ImageSource = null;
-                ViewBoxWidth = null;
-                ViewBoxHeight = null;
             }
         }
 
