@@ -141,5 +141,29 @@ namespace QuickEvidence.Properties {
                 this["ExpansionRate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsVisibleOpenColumn {
+            get {
+                return ((bool)(this["IsVisibleOpenColumn"]));
+            }
+            set {
+                this["IsVisibleOpenColumn"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsVisibleFolderColumn {
+            get {
+                return ((bool)(this["IsVisibleFolderColumn"]));
+            }
+            set {
+                this["IsVisibleFolderColumn"] = value;
+            }
+        }
     }
 }

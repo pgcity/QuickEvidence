@@ -21,6 +21,9 @@
                 <views:ToggleConverter/>
                 <BooleanToVisibilityConverter/>
             </views:ValueConverterGroup>
+            
+            <!--リスト内からリスト外のDataContextを参照するため-->
+            <FrameworkElement x:Key="dummyElement" />
         </ResourceDictionary>
     </Window.Resources>
     <Window.InputBindings>
@@ -48,6 +51,9 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="784*"/>
         </Grid.ColumnDefinitions>
+
+        <!--リスト内からリスト外のDataContextを参照するため-->
+        <ContentControl Visibility="Collapsed" Content="{StaticResource dummyElement}" />
 
         <!-- 左上ボタン群-->
         <Button HorizontalAlignment="Left" Width="30" Height="30" VerticalAlignment="Top"
@@ -90,19 +96,24 @@
                   EnableRowVirtualization="False"
                   IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}, Mode=TwoWay}"
                   views:IsEditingBehavior.IsEditing="{Binding IsFileNameEditing, Mode=TwoWay}">
-            <i:Interaction.Behaviors>
-                <views:IsEditingBehavior/>
-            </i:Interaction.Behaviors>
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
-                </i:EventTrigger>
-                <i:EventTrigger EventName="PreviewKeyDown">
-                    <prism:InvokeCommandAction Command="{Binding FileListPreviewKeyDownCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-            <DataGrid.RowStyle>
-                <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
+            <DataGrid.Resources>
+                <!--列のスタイル-->
+                <Style x:Key="headerStyle" TargetType="DataGridColumnHeader" BasedOn="{StaticResource MetroDataGridColumnHeader}">
+                    <Setter Property="Tag" 
+                            Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},
+                            Path=DataContext}"/>
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                <MenuItem IsEnabled="False" IsCheckable="True" IsChecked="{Binding IsVisibleFileColumn}" Header="ファイル" Command="{Binding UpdateCommand}"/>
+                                <MenuItem                   IsCheckable="True" IsChecked="{Binding IsVisibleOpenColumn}" Header="開くボタン" Command="{Binding UpdateCommand}"/>
+                                <MenuItem                   IsCheckable="True" IsChecked="{Binding IsVisibleFolderColumn}" Header="フォルダ" Command="{Binding UpdateCommand}"/>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                <!--行のスタイル-->
+                <Style x:Key="rowStyle" TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
                     <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}" />
                     <Setter Property="Tag" 
                             Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},
@@ -136,11 +147,34 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
+            </DataGrid.Resources>
+            
+            <i:Interaction.Behaviors>
+                <views:IsEditingBehavior/>
+            </i:Interaction.Behaviors>
+            
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding FileSelectionChangedCommand}"/>
+                </i:EventTrigger>
+                <i:EventTrigger EventName="PreviewKeyDown">
+                    <prism:InvokeCommandAction Command="{Binding FileListPreviewKeyDownCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource headerStyle}"/>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource rowStyle}"/>
             </DataGrid.RowStyle>
+            
             <DataGrid.Columns>
-                <DataGridTemplateColumn Width="32" IsReadOnly="True">
+                <DataGridTemplateColumn Width="32" IsReadOnly="True" 
+                                        Visibility="{Binding Path=DataContext.IsVisibleOpenColumn, Source={StaticResource dummyElement}
+                                        , Converter={StaticResource booleanToVisibilityConverter}}">
                     <DataGridTemplateColumn.HeaderStyle>
-                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MetroDataGridColumnHeader}">
+                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource headerStyle}">
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
                         </Style>
                     </DataGridTemplateColumn.HeaderStyle>
@@ -155,8 +189,12 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Width="200" Binding="{Binding FileName}" Header="ファイル"/>
-                <DataGridTextColumn Width="200" Binding="{Binding FolderPath}" Header="フォルダー" IsReadOnly="True"/>
+                <DataGridTextColumn Width="200" Binding="{Binding FileName}" Header="ファイル"
+                                    Visibility="{Binding Path=DataContext.IsVisibleFileColumn, Source={StaticResource dummyElement}
+                                        , Converter={StaticResource booleanToVisibilityConverter}}"/>
+                <DataGridTextColumn Width="200" Binding="{Binding FolderPath}" Header="フォルダー" IsReadOnly="True"
+                                    Visibility="{Binding Path=DataContext.IsVisibleFolderColumn, Source={StaticResource dummyElement}
+                                        , Converter={StaticResource booleanToVisibilityConverter}}"/>
             </DataGrid.Columns>
         </DataGrid>
 

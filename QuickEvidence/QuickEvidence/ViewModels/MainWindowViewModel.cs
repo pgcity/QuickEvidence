@@ -60,6 +60,8 @@ namespace QuickEvidence.ViewModels
                 Properties.Settings.Default.Save();
             }
             ExpansionRate = Properties.Settings.Default.ExpansionRate;
+            IsVisibleOpenColumn = Properties.Settings.Default.IsVisibleOpenColumn;
+            IsVisibleFolderColumn = Properties.Settings.Default.IsVisibleFolderColumn;
 
             UpdateFileList();
             UpdateWindowTitle();
@@ -81,6 +83,38 @@ namespace QuickEvidence.ViewModels
 
         ///////////////////////////////////////////////
         // プロパティ
+
+        // DataGridのカラム
+
+        /// <summary>
+        /// 開く
+        /// </summary>
+        private bool _isVisibleOpenColumn = true;
+        public bool IsVisibleOpenColumn
+        {
+            get { return _isVisibleOpenColumn; }
+            set { SetProperty(ref _isVisibleOpenColumn, value); }
+        }
+
+        /// <summary>
+        /// ファイル
+        /// </summary>
+        private bool _isVisibleFileColumn = true;
+        public bool IsVisibleFileColumn
+        {
+            get { return _isVisibleFileColumn; }
+            set { SetProperty(ref _isVisibleFileColumn, value); }
+        }
+
+        /// <summary>
+        /// フォルダ
+        /// </summary>
+        private bool _isVisibleFolderColumn = true;
+        public bool IsVisibleFolderColumn
+        {
+            get { return _isVisibleFolderColumn; }
+            set { SetProperty(ref _isVisibleFolderColumn, value); }
+        }
 
         /// <summary>
         /// ドラッグ開始座標
@@ -458,6 +492,11 @@ namespace QuickEvidence.ViewModels
 
             //拡大率を保存
             Properties.Settings.Default.ExpansionRate = ExpansionRate;
+
+            //列の表示を保存
+            Properties.Settings.Default.IsVisibleOpenColumn = IsVisibleOpenColumn;
+            Properties.Settings.Default.IsVisibleFolderColumn = IsVisibleFolderColumn;
+
             Properties.Settings.Default.Save();
         }
 
