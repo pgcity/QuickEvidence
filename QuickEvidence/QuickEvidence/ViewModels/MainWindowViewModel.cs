@@ -1655,20 +1655,43 @@ ExactSpelling = true)]
         /// </summary>
         void PushUndoStack()
         {
-            // 描画可能なビットマップに変更
-            DrawingVisual drawingVisual = new DrawingVisual();
-            DrawingContext drawingContext = drawingVisual.RenderOpen();
-            drawingContext.DrawImage(ImageSource, new Rect(0, 0, ImageSource.Width, ImageSource.Height));
-            drawingContext.Close();
-
-            // 96dpi に固定して読み込み
-            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)ImageSource.Width, (int)ImageSource.Height,
-                                                            /*tmpBitmap.DpiX*/96, /*tmpBitmap.DpiY*/96, PixelFormats.Pbgra32);
-            bitmap.Render(drawingVisual);
-            UndoStack.Add(bitmap);
-
-            //今までのやり直し情報はクリア
+            //今までのやり直し情報は先にクリア
             RedoStack.Clear();
+
+            // 既存の元に戻す領域をチェック
+            var pixelEnum = (from x in UndoStack select x.PixelWidth * x.PixelHeight / 1000);
+            var bitmapKPixel = ImageSource.PixelWidth * ImageSource.PixelHeight / 1000;
+            var limitKPixel = Properties.Settings.Default.UndoMemoryKPixel;
+
+            // 元に戻せるまで、既存の元に戻すメモリを削除
+            while (UndoStack.Count > 0 && pixelEnum.Sum() + bitmapKPixel > limitKPixel)
+            {
+                UndoStack.RemoveAt(0);
+                GC.Collect();
+            }
+
+            // サイズが条件を満たせば、元に戻すメモリに追加する
+            if(pixelEnum.Sum() + bitmapKPixel <= limitKPixel)
+            {
+                DrawingVisual drawingVisual = new DrawingVisual();
+                DrawingContext drawingContext = drawingVisual.RenderOpen();
+                drawingContext.DrawImage(ImageSource, new Rect(0, 0, ImageSource.Width, ImageSource.Height));
+                drawingContext.Close();
+
+                try
+                {
+                    RenderTargetBitmap bitmap = new RenderTargetBitmap((int)ImageSource.Width, (int)ImageSource.Height,
+                                        /*tmpBitmap.DpiX*/96, /*tmpBitmap.DpiY*/96, PixelFormats.Pbgra32);
+                    bitmap.Render(drawingVisual);
+                    UndoStack.Add(bitmap);
+                }
+                catch (OutOfMemoryException)
+                {
+                    // 追加できなかった
+                    UndoStack.Clear();
+                    GC.Collect();
+                }
+            }
 
             UpdateUndoRedoStatus();
         }
@@ -1685,7 +1708,6 @@ ExactSpelling = true)]
 
             // メモリを解放しておく
             GC.Collect();
-            GC.WaitForPendingFinalizers();
         }
 
         /// <summary>

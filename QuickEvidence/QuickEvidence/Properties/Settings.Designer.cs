@@ -165,5 +165,17 @@ namespace QuickEvidence.Properties {
                 this["IsVisibleFolderColumn"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200000")]
+        public int UndoMemoryKPixel {
+            get {
+                return ((int)(this["UndoMemoryKPixel"]));
+            }
+            set {
+                this["UndoMemoryKPixel"] = value;
+            }
+        }
     }
 }
