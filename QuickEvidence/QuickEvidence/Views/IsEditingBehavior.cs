@@ -42,6 +42,11 @@ namespace QuickEvidence.Views
         private void Grid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
         {
             DataGrid grid = (DataGrid)this.AssociatedObject;
+            if(grid.SelectedItems.Count != 1)
+            {
+                e.Cancel = true;
+                return;
+            }
             SetIsEditing(grid, true);
         }
 
