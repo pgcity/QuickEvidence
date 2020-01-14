@@ -58,16 +58,18 @@ namespace QuickEvidence.Views
         /// <summary>
         /// 複数ファイルの名前変更
         /// </summary>
-        public FileRenameWindowViewModel RenameMultipleFiles(FileNameCheckFunc checkFunc)
+        public FileRenameWindowViewModel RenameMultipleFiles(string defaultFileName, FileNameCheckFunc checkFunc)
         {
             var window = new FileRenameWindow()
             {
                 Owner = this,
                 CheckFunc = checkFunc
             };
+            var vm = window.DataContext as FileRenameWindowViewModel;
+            vm.FileName = defaultFileName;
+
             window.ShowDialog();
 
-            var vm = window.DataContext as FileRenameWindowViewModel;
             return vm;
         }
 

@@ -6,7 +6,7 @@ namespace QuickEvidence.Views
     /// <summary>
     /// Interaction logic for FileRenameWindow.xaml
     /// </summary>
-    public partial class FileRenameWindow : Window, IClose
+    public partial class FileRenameWindow : Window, IClose, IFileRenameWindow
     {
         public FileRenameWindow()
         {
@@ -15,6 +15,7 @@ namespace QuickEvidence.Views
             var vm = DataContext as FileRenameWindowViewModel;
 
             vm.CloseIF = this;
+            vm.FileRenameWindowIF = this;
         }
 
         public FileNameCheckFunc CheckFunc {
@@ -28,6 +29,11 @@ namespace QuickEvidence.Views
                 var vm = DataContext as FileRenameWindowViewModel;
                 vm.CheckFunc = value;
             }
+        }
+
+        public void SelectAll()
+        {
+            FileNameTextBox.SelectAll();
         }
     }
 }

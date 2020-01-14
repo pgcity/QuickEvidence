@@ -10,6 +10,6 @@ namespace QuickEvidence.ViewModels
 
     public interface INavigation
     {
-        FileRenameWindowViewModel RenameMultipleFiles(FileNameCheckFunc checkFunc);
+        FileRenameWindowViewModel RenameMultipleFiles(string defaultFileName, FileNameCheckFunc checkFunc);
     }
 }

@@ -1202,7 +1202,12 @@ ExactSpelling = true)]
         /// </summary>
         private void EditMultipleFileName()
         {
-            var result = NavigationIF.RenameMultipleFiles(EditMultipleFileNameCheck);
+            if(SelectedFiles.Count == 0 || SelectedFiles[0] == null)
+            {
+                return;
+            }
+            var result = NavigationIF.RenameMultipleFiles(
+                            Path.GetFileNameWithoutExtension(SelectedFiles[0].FileName), EditMultipleFileNameCheck);
             if (result.Result)
             {
                 var currentNo = result.StartNo;

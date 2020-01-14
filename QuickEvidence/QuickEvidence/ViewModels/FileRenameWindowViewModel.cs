@@ -10,6 +10,7 @@ namespace QuickEvidence.ViewModels
     public class FileRenameWindowViewModel : BindableBase
     {
         public IClose CloseIF { get; internal set; }
+        public IFileRenameWindow FileRenameWindowIF { get; internal set; }
         public FileNameCheckFunc CheckFunc { get; internal set; }
 
         public FileRenameWindowViewModel()
@@ -50,6 +51,19 @@ namespace QuickEvidence.ViewModels
 
         //////////////////////////////////////////////
         // コマンド
+
+        /// <summary>
+        /// ロードされた
+        /// </summary>
+        private DelegateCommand _loadedCommand;
+        public DelegateCommand LoadedCommand =>
+            _loadedCommand ?? (_loadedCommand = new DelegateCommand(ExecuteLoadedCommand));
+
+        void ExecuteLoadedCommand()
+        {
+            FileRenameWindowIF.SelectAll();
+        }
+
 
         /// <summary>
         /// OKボタンが押された
