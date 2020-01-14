@@ -422,7 +422,10 @@ namespace QuickEvidence.ViewModels
         public bool IsModify
         {
             get { return _isModify; }
-            set { SetProperty(ref _isModify, value); }
+            set {
+                SetProperty(ref _isModify, value);
+                UpdateWindowTitle();
+            }
         }
 
         /// <summary>
@@ -1025,7 +1028,8 @@ namespace QuickEvidence.ViewModels
             }
             else if (SelectedFiles.Count == 1)
             {
-                WindowTitle = SelectedFiles[0].FileName + " - " + APP_NAME;
+                var modifyMark = IsModify ? "*" : "";
+                WindowTitle = SelectedFiles[0].FileName + modifyMark + " - " + APP_NAME;
             }
             else
             {
