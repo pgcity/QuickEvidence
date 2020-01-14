@@ -41,6 +41,14 @@ namespace QuickEvidence.Views
         /// <param name="e"></param>
         private void Grid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
         {
+            var textEvent = e.EditingEventArgs as System.Windows.Input.TextCompositionEventArgs;
+            if (textEvent != null && textEvent.Text != "")
+            {
+                // テキスト入力による編集開始をさせない
+                e.Cancel = true;
+                return;
+            }
+
             DataGrid grid = (DataGrid)this.AssociatedObject;
             if(grid.SelectedItems.Count != 1)
             {
