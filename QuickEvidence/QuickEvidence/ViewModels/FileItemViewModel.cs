@@ -15,6 +15,14 @@ namespace QuickEvidence.ViewModels
 
         }
 
+        public FileItemViewModel(string filePath, string baseFolder, bool isSelected = false)
+        {
+            FileName = Path.GetFileName(filePath);
+            FolderPath = Path.GetDirectoryName(filePath).Replace(baseFolder, ".");
+            FolderFullPath = Path.GetDirectoryName(filePath);
+            IsSelected = isSelected;
+        }
+
         /// <summary>
         /// 選択状態（VMからの設定専用）
         /// </summary>

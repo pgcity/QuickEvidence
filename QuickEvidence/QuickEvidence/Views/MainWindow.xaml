@@ -26,6 +26,9 @@
             <FrameworkElement x:Key="dummyElement" />
         </ResourceDictionary>
     </Window.Resources>
+    <Window.Visibility>
+        <Binding Path="WindowVisibility" Converter="{StaticResource booleanToVisibilityConverter}"/>
+    </Window.Visibility>
     <Window.InputBindings>
         <KeyBinding Key="F11" Command="{Binding FullScreenCommand}"/>
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveCommand}"/>
@@ -33,6 +36,7 @@
         <KeyBinding Key="Z" Modifiers="Ctrl" Command="{Binding UndoCommand}"/>
         <KeyBinding Key="Y" Modifiers="Ctrl" Command="{Binding RedoCommand}"/>
         <KeyBinding Key="F5" Command="{Binding UpdateCommand}"/>
+        <KeyBinding Key="F7" Command="{Binding ScreenShotCommand}"/>
         <KeyBinding Key="F1" Command="{Binding HelpCommand}"/>
         <KeyBinding Key="F2" Command="{Binding RenameCommand}"/>
         <KeyBinding Key="Delete" Command="{Binding DeleteFileCommand}"/>
@@ -79,6 +83,18 @@
                 IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
                 ToolTip="削除">
             <iconPacks:PackIconMaterial Kind="Delete" Foreground="Gray" />
+        </Button>
+        <Button Margin="140,0,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="30"
+                Command="{Binding ScreenShotCommand}"
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                ToolTip="スクリーンショット(F7)">
+            <iconPacks:PackIconMaterial Kind="Camera" Foreground="Gray" />
+        </Button>
+        <Button Margin="180,0,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="30"
+                Command="{Binding ConfigCommand}"
+                IsEnabled="{Binding IsModify, Converter={StaticResource inverseBooleanConverter}}"
+                ToolTip="設定">
+            <iconPacks:PackIconMaterial Kind="ImageFilterCenterFocus" Foreground="Gray" />
         </Button>
         <Button Margin="0,0,0,0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30"
                 Command="{Binding HelpCommand}"

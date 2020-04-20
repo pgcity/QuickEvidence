@@ -7,8 +7,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -84,37 +86,38 @@ namespace QuickEvidence.ViewModels
         ///////////////////////////////////////////////
         // プロパティ
 
-        // DataGridのカラム
-
-        /// <summary>
-        /// 開く
-        /// </summary>
-        private bool _isVisibleOpenColumn = true;
-        public bool IsVisibleOpenColumn
+        // Windowの表示
+        private bool _isWindowVisible = true;
+        public bool WindowVisibility
         {
-            get { return _isVisibleOpenColumn; }
-            set { SetProperty(ref _isVisibleOpenColumn, value); }
+            get { return _isWindowVisible; }
+            set { SetProperty(ref _isWindowVisible, value); }
         }
 
-        /// <summary>
-        /// ファイル
-        /// </summary>
-        private bool _isVisibleFileColumn = true;
-        public bool IsVisibleFileColumn
-        {
-            get { return _isVisibleFileColumn; }
-            set { SetProperty(ref _isVisibleFileColumn, value); }
-        }
+        // スクリーンショット用
+        // 左上座標X
+        private int ScreenShotLeft {
+            get; set;
+        } = 0;
 
-        /// <summary>
-        /// フォルダ
-        /// </summary>
-        private bool _isVisibleFolderColumn = true;
-        public bool IsVisibleFolderColumn
+        // 左上座標Y
+        private int ScreenShotTop
         {
-            get { return _isVisibleFolderColumn; }
-            set { SetProperty(ref _isVisibleFolderColumn, value); }
-        }
+            get; set;
+        } = 0;
+        
+        // 幅
+        private int ScreenShotWidth
+        {
+            get; set;
+        } = (int)SystemParameters.PrimaryScreenWidth;
+
+        // 高さ
+        private int ScreenShotHeight
+        {
+            get; set;
+        } = (int)SystemParameters.PrimaryScreenHeight;
+
 
         /// <summary>
         /// ドラッグ開始座標
@@ -150,6 +153,38 @@ namespace QuickEvidence.ViewModels
 
         ///////////////////////////////////////////////
         // バインディング用プロパティ
+
+        // DataGridのカラム
+
+        /// <summary>
+        /// 開く
+        /// </summary>
+        private bool _isVisibleOpenColumn = true;
+        public bool IsVisibleOpenColumn
+        {
+            get { return _isVisibleOpenColumn; }
+            set { SetProperty(ref _isVisibleOpenColumn, value); }
+        }
+
+        /// <summary>
+        /// ファイル
+        /// </summary>
+        private bool _isVisibleFileColumn = true;
+        public bool IsVisibleFileColumn
+        {
+            get { return _isVisibleFileColumn; }
+            set { SetProperty(ref _isVisibleFileColumn, value); }
+        }
+
+        /// <summary>
+        /// フォルダ
+        /// </summary>
+        private bool _isVisibleFolderColumn = true;
+        public bool IsVisibleFolderColumn
+        {
+            get { return _isVisibleFolderColumn; }
+            set { SetProperty(ref _isVisibleFolderColumn, value); }
+        }
 
         /// <summary>
         /// ウィンドウタイトル
@@ -1000,6 +1035,46 @@ namespace QuickEvidence.ViewModels
         }
 
         /// <summary>
+        /// F7キー：スクリーンショット
+        /// </summary>
+        private DelegateCommand _screenShotCommand;
+        public DelegateCommand ScreenShotCommand =>
+            _screenShotCommand ?? (_screenShotCommand = new DelegateCommand(ExecuteScreenShotCommand));
+
+        void ExecuteScreenShotCommand()
+        {
+            OnScreenShot();
+        }
+
+        /// <summary>
+        /// スクリーンショットの設定ボタン
+        /// </summary>
+        private DelegateCommand _configCommand;
+        public DelegateCommand ConfigCommand =>
+            _configCommand ?? (_configCommand = new DelegateCommand(ExecuteConfigCommand));
+
+        void ExecuteConfigCommand()
+        {
+            if(WindowState == WindowState.Normal)
+            {
+                ScreenShotLeft = (int)App.Current.MainWindow.Left;
+                ScreenShotTop = (int)App.Current.MainWindow.Top;
+                ScreenShotWidth = (int)App.Current.MainWindow.Width;
+                ScreenShotHeight = (int)App.Current.MainWindow.Height;
+            }
+            else
+            {
+                ScreenShotLeft = 0;
+                ScreenShotTop = 0;
+                ScreenShotWidth = (int)SystemParameters.PrimaryScreenWidth;
+                ScreenShotHeight = (int)SystemParameters.PrimaryScreenHeight;
+            }
+
+
+            MessageBox.Show("現在のウィンドウ位置のスクリーンショットを取得するよう設定しました。");
+        }
+
+        /// <summary>
         /// F1キー：readme.txt表示
         /// </summary>
         private DelegateCommand _helpCommand;
@@ -1062,13 +1137,7 @@ namespace QuickEvidence.ViewModels
             }
             foreach (var item in list)
             {
-                FileItems.Add(new FileItemViewModel()
-                {
-                    FileName = Path.GetFileName(item),
-                    FolderPath = Path.GetDirectoryName(item).Replace(FolderPath, "."),
-                    FolderFullPath = Path.GetDirectoryName(item),
-                    IsSelected = false
-                });
+                FileItems.Add(new FileItemViewModel(item, FolderPath));
             }
 
             //同じパスのファイルを再選択
@@ -1552,43 +1621,57 @@ ExactSpelling = true)]
         /// </summary>
         private bool SaveImage()
         {
+            if (SelectedFiles.Count != 1)
+            {
+                return false;
+            }
             try
             {
-                if(SelectedFiles.Count != 1)
-                {
-                    return false;
-                }
-                using (var os = new FileStream(SelectedFiles[0].FullPath, FileMode.OpenOrCreate))
-                {
-                    // 変換したBitmapをエンコードしてFileStreamに保存する。
-                    // BitmapEncoder が指定されなかった場合は、PNG形式とする。
-                    var ext = Path.GetExtension(SelectedFiles[0].FileName).ToLower();
-                    BitmapEncoder encoder = null;
-                    switch (ext)
-                    {
-                        case ".png":
-                            encoder = new PngBitmapEncoder();
-                            break;
-                        case ".jpg":
-                        case ".jpeg":
-                            encoder = new JpegBitmapEncoder();
-                            break;
-                        case ".bmp":
-                        default:
-                            encoder = new BmpBitmapEncoder();
-                            break;
-                    }
-                    encoder.Frames.Add(BitmapFrame.Create(ImageSource));
-                    encoder.Save(os);
-                    return true;
-                }
-            }catch(Exception e)
+                SaveImage(SelectedFiles[0].FullPath, ImageSource);
+                return true;
+
+            }
+            catch(Exception e)
             {
                 MessageBox.Show("ファイルの保存でエラーが発生しました\n\n" + e.Message);
                 return false;
             }
-
         }
+
+        /// <summary>
+        /// 画像の保存
+        /// </summary>
+        /// <param name="savePath"></param>
+        /// <returns></returns>
+        private bool SaveImage(string savePath, BitmapSource bmpSource)
+        {
+            using (var os = new FileStream(savePath, FileMode.OpenOrCreate))
+            {
+                // 変換したBitmapをエンコードしてFileStreamに保存する。
+                // BitmapEncoder が指定されなかった場合は、PNG形式とする。
+                var ext = Path.GetExtension(savePath).ToLower();
+                BitmapEncoder encoder = null;
+                switch (ext)
+                {
+                    case ".png":
+                        encoder = new PngBitmapEncoder();
+                        break;
+                    case ".jpg":
+                    case ".jpeg":
+                        encoder = new JpegBitmapEncoder();
+                        break;
+                    case ".bmp":
+                    default:
+                        encoder = new BmpBitmapEncoder();
+                        break;
+                }
+                encoder.Frames.Add(BitmapFrame.Create(bmpSource));
+                encoder.Save(os);
+                return true;
+            }
+        }
+
+
 
         /// <summary>
         /// 拡大率に合わせてViewBoxのサイズを更新
@@ -1756,6 +1839,100 @@ ExactSpelling = true)]
         {
             CanUndo = UndoStack.Count > 0;
             CanRedo = RedoStack.Count > 0;
+        }
+
+        /// <summary>
+        /// スクリーンショットを取得する
+        /// </summary>
+        private void OnScreenShot()
+        {
+            if (IsModify || IsFileNameEditing)
+            {
+                return;
+            }
+
+            WindowVisibility = false;
+
+            Task.Run(() =>
+            {
+                System.Threading.Thread.Sleep(250);
+
+                var sc = GetScreenShot();
+                string savePath = Path.Combine(FolderPath, GetScreenShotFileName());
+
+                SaveImage(savePath, sc);
+
+                System.Threading.Thread.Sleep(250);
+
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    WindowVisibility = true;
+                    foreach (var item in FileItems)
+                    {
+                        item.IsSelected = false;
+                    }
+
+                    var saveItem = new FileItemViewModel(savePath, FolderPath, true);
+                    FileItems.Add(saveItem);
+
+                    App.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        DataGridIF.ScrollToItem(saveItem);
+
+                    });
+
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        DataGridIF.ScrollToItem(saveItem);
+
+                    });
+
+                });
+            });
+        }
+
+        /// <summary>
+        /// スクリーンショットを取得する
+        /// </summary>
+        /// <returns></returns>
+        private BitmapSource GetScreenShot()
+        {
+            using (var screenBmp = new System.Drawing.Bitmap(
+                ScreenShotWidth,
+                ScreenShotHeight,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+            {
+                using (var bmpGraphics = System.Drawing.Graphics.FromImage(screenBmp))
+                {
+                    bmpGraphics.CopyFromScreen(ScreenShotLeft, ScreenShotTop, 0, 0, new System.Drawing.Size(ScreenShotWidth, ScreenShotHeight));
+                    return Imaging.CreateBitmapSourceFromHBitmap(
+                        screenBmp.GetHbitmap(),
+                        IntPtr.Zero,
+                        Int32Rect.Empty,
+                        BitmapSizeOptions.FromEmptyOptions());
+                }
+            }
+        }
+
+        /// <summary>
+        /// 新しいスクリーンショットファイルの名前を取得する
+        /// </summary>
+        /// <returns></returns>
+        private string GetScreenShotFileName()
+        {
+            var now = DateTime.Now;
+
+            string fileName = "";
+            string fullPath = "";
+            int cnt = 0;
+            do
+            {
+                fileName = "ScreenShot_" + now.ToString("yyyyMMdd_HHmmss") + "_" + (cnt++).ToString("00") + ".png";
+                fullPath = Path.Combine(FolderPath, fileName);
+            } while (File.Exists(fullPath));
+
+            return fileName;
         }
     }
 }
