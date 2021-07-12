@@ -1524,15 +1524,7 @@ ExactSpelling = true)]
                 }
 
                 // 描画可能なビットマップに変更
-                DrawingVisual drawingVisual = new DrawingVisual();
-                DrawingContext drawingContext = drawingVisual.RenderOpen();
-                drawingContext.DrawImage(tmpBitmap, new Rect(0, 0, tmpBitmap.Width, tmpBitmap.Height));
-                drawingContext.Close();
-
-                // 96dpi に固定して読み込み
-                RenderTargetBitmap bitmap = new RenderTargetBitmap((int)tmpBitmap.Width, (int)tmpBitmap.Height,
-                                                                /*tmpBitmap.DpiX*/96, /*tmpBitmap.DpiY*/96, PixelFormats.Pbgra32);
-                bitmap.Render(drawingVisual);
+                RenderTargetBitmap bitmap = LoadImageToNewBitmap(tmpBitmap);
                 ImageSource = bitmap;
 
                 // 元に戻す・やり直し情報をクリア
@@ -1545,6 +1537,23 @@ ExactSpelling = true)]
             {
                 ImageSource = null;
             }
+        }
+
+        /// <summary>
+        /// 新規ビットマップにイメージを読み込む
+        /// </summary>
+        /// <param name="baseImage">読み込むイメージ</param>
+        RenderTargetBitmap LoadImageToNewBitmap(BitmapSource baseImage)
+        {
+            DrawingVisual drawingVisual = new DrawingVisual();
+            DrawingContext drawingContext = drawingVisual.RenderOpen();
+            drawingContext.DrawImage(baseImage, new Rect(0, 0, baseImage.Width, baseImage.Height));
+            drawingContext.Close();
+
+            RenderTargetBitmap bitmap = new RenderTargetBitmap(baseImage.PixelWidth, baseImage.PixelHeight,
+                                baseImage.DpiX, baseImage.DpiY, PixelFormats.Pbgra32);
+            bitmap.Render(drawingVisual);
+            return bitmap;
         }
 
         /// <summary>
@@ -1605,6 +1614,19 @@ ExactSpelling = true)]
         }
 
         /// <summary>
+        /// スクリーン座標をイメージ座標に変換
+        /// </summary>
+        /// <param name="x">スクリーン上のX座標</param>
+        /// <param name="y">スクリーン上のY座標</param>
+        /// <returns></returns>
+        private Point ScreenToImage(double x, double y)
+        {
+            return new Point(
+                Math.Round(x * 100 / ExpansionRate) + 0.5,
+                Math.Round(y * 100 / ExpansionRate) + 0.5);
+        }
+
+        /// <summary>
         /// 四角形を描画
         /// </summary>
         private void DrawRectangle()
@@ -1615,13 +1637,9 @@ ExactSpelling = true)]
             DrawingVisual drawingVisual = new DrawingVisual();
             DrawingContext drawingContext = drawingVisual.RenderOpen();
 
-            //拡大率で割る
-            var startPos = new Point(
-                Math.Round(DragStartPosViewBox.X * 100 / ExpansionRate) + 0.5,
-                Math.Round(DragStartPosViewBox.Y * 100 / ExpansionRate) + 0.5);
-            var endPos = new Point(
-                Math.Round(DragEndPosViewBox.X * 100 / ExpansionRate) + 0.5,
-                Math.Round(DragEndPosViewBox.Y * 100 / ExpansionRate) + 0.5);
+            var startPos = ScreenToImage(DragStartPosViewBox.X, DragStartPosViewBox.Y);
+            var endPos = ScreenToImage(DragEndPosViewBox.X, DragEndPosViewBox.Y); 
+
             drawingContext.DrawRectangle(Brushes.Transparent, new Pen(new SolidColorBrush(SelectedColor), SelectedLineWidth), new Rect(startPos, endPos));
             drawingContext.Close();
 
@@ -1641,8 +1659,7 @@ ExactSpelling = true)]
             DrawingVisual drawingVisual = new DrawingVisual();
             DrawingContext drawingContext = drawingVisual.RenderOpen();
 
-            //拡大率で割る
-            var textPos = new Point(DragStartPosViewBox.X * 100 / ExpansionRate, DragStartPosViewBox.Y * 100 / ExpansionRate);
+            var textPos = ScreenToImage(DragStartPosViewBox.X, DragStartPosViewBox.Y);
 
             drawingContext.DrawText(
                 new FormattedText(
@@ -1682,16 +1699,9 @@ ExactSpelling = true)]
             // サイズが条件を満たせば、元に戻すメモリに追加する
             if(pixelEnum.Sum() + bitmapKPixel <= limitKPixel)
             {
-                DrawingVisual drawingVisual = new DrawingVisual();
-                DrawingContext drawingContext = drawingVisual.RenderOpen();
-                drawingContext.DrawImage(ImageSource, new Rect(0, 0, ImageSource.Width, ImageSource.Height));
-                drawingContext.Close();
-
                 try
                 {
-                    RenderTargetBitmap bitmap = new RenderTargetBitmap((int)ImageSource.Width, (int)ImageSource.Height,
-                                        /*tmpBitmap.DpiX*/96, /*tmpBitmap.DpiY*/96, PixelFormats.Pbgra32);
-                    bitmap.Render(drawingVisual);
+                    RenderTargetBitmap bitmap = LoadImageToNewBitmap(ImageSource);
                     UndoStack.Add(bitmap);
                 }
                 catch (OutOfMemoryException)
